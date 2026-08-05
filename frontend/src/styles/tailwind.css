@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .form-input-skm {
+    @apply w-full p-3 rounded-xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-accent focus:ring-0 outline-none transition-all font-medium text-slate-700;
+  }
+
+  /* Background aplikasi: mesh gradient primary + accent, kesan modern/digital.
+     Dipasang sekali di root layout (App.jsx). */
+  .app-background {
+    background-color: #f0f5fb;
+    background-image:
+      radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 16%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 40%),
+      radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 40%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .dark .app-background {
+    background-color: #0f172a;
+    background-image:
+      radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 14%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 40%),
+      radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 40%);
+  }
+}
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #1E3A8A;
+  --color-primary-600: #1e40af;
+  --color-primary-700: #1e3a8a;
+  --color-primary-800: #172554;
+  --color-primary-900: #0f172a;
+  --color-primary: #1E3A8A;
+
+  --color-accent-50: #fef2f2;
+  --color-accent-100: #fee2e2;
+  --color-accent-200: #fecaca;
+  --color-accent-300: #fca5a5;
+  --color-accent-400: #f87171;
+  --color-accent-500: #DC2626;
+  --color-accent-600: #b91c1c;
+  --color-accent-700: #991b1b;
+  --color-accent-800: #7f1d1d;
+  --color-accent-900: #450a0a;
+  --color-accent: #DC2626;
+
+  --font-size-hero: clamp(2rem, 1rem + 5vw, 4.5rem);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em; /* Meningkatkan kemewahan visual */
+    @apply antialiased text-slate-900 dark:text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.025em; /* Lebih rapat untuk heading agar tegas */
+    @apply font-extrabold;
+  }
+}
