@@ -13,6 +13,7 @@ const iconMap = {
 export default function Navbar({ dark, toggleDark }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [drop, setDrop] = useState(null);
+  const [mobileDrop, setMobileDrop] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef(null);
 
@@ -157,27 +158,18 @@ export default function Navbar({ dark, toggleDark }) {
                       className="absolute top-full left-0 mt-2 min-w-64 rounded-2xl border border-primary/15 shadow-[0_8px_32px_rgba(0,0,0,0.18)] py-2 z-50 backdrop-blur-xl"
                       style={{ background: "rgba(255,255,255,0.97)" }}
                     >
-                      {item.sub.map((s) => {
-                        const routeMap = {
-                          "Visi & Misi": "/visi-misi",
-                          "Tupoksi": "/tupoksi",
-                          "Struktur Organisasi": "/struktur",
-                          "Maklumat Layanan": "/maklumat",
-                          "Standar Layanan": "/maklumat",
-                          "Daftar Informasi Publik": "/ppid?tab=Daftar+Informasi+Publik",
-                          "Informasi Berkala": "/ppid?tab=Informasi+Berkala",
-                          "Informasi Setiap Saat": "/ppid?tab=Informasi+Setiap+Saat",
-                          "Informasi Serta Merta": "/ppid?tab=Informasi+Serta+Merta",
-                          "Informasi Dikecualikan": "/ppid?tab=Informasi+Dikecualikan",
-                        };
-                        const label = typeof s === "string" ? s : s.label;
-                        const to = typeof s === "string" ? (routeMap[s] || "/") : (s.href || "/");
-                        return (
-                          <Link
-                            key={label}
-                            to={to}
-                            className="block px-5 py-3 text-[12px] text-primary font-semibold hover:bg-accent-50 transition-colors border-b border-slate-50 last:border-0"
-                          >
+                      {item.sub.map((subItem) => {
+                        const label = typeof subItem === "string" ? subItem : subItem.label;
+                        const href = typeof subItem === "string" ? "/" : (subItem.href || "/");
+                        const isExternal = typeof subItem !== "string" && subItem.isExternal;
+                        const classes = "block px-5 py-3 text-[12px] text-primary font-semibold hover:bg-accent-50 transition-colors border-b border-slate-50 last:border-0";
+
+                        return isExternal ? (
+                          <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={classes}>
+                            {label}
+                          </a>
+                        ) : (
+                          <Link key={label} to={href} className={classes}>
                             {label}
                           </Link>
                         );
@@ -213,21 +205,76 @@ export default function Navbar({ dark, toggleDark }) {
         {/* Mobile Menu */}
         {menuOpen && (
           <div
-            className="lg:hidden max-w-7xl mx-auto mt-2 rounded-2xl border border-primary/15 shadow-[0_8px_32px_rgba(0,0,0,0.15)] p-3 backdrop-blur-xl"
+            className="lg:hidden max-w-7xl mx-auto mt-2 rounded-2xl border border-primary/15 shadow-[0_8px_32px_rgba(0,0,0,0.15)] p-3 backdrop-blur-xl max-h-[70vh] overflow-y-auto"
             style={{ background: "rgba(255,255,255,0.97)" }}
           >
             {navMenus.map((item) => {
               const Icon = iconMap[item.icon];
+
+              if (!item.sub) {
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-4 px-5 py-3.5 rounded-xl text-xs font-bold uppercase text-primary hover:bg-accent-50 transition-colors"
+                  >
+                    {Icon && <Icon size={16} className="text-accent-600" />}
+                    {item.label}
+                  </Link>
+                );
+              }
+
+              const isOpen = mobileDrop === item.label;
+
               return (
-                <Link
-                  key={item.label}
-                  to={item.href.startsWith('#') ? '#' : item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-4 px-5 py-3.5 rounded-xl text-xs font-bold uppercase text-primary hover:bg-accent-50 transition-colors"
-                >
-                  {Icon && <Icon size={16} className="text-accent-600" />}
-                  {item.label}
-                </Link>
+                <div key={item.label} className="border-b border-slate-100 last:border-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobileDrop(isOpen ? null : item.label)}
+                    className="flex w-full items-center justify-between rounded-xl px-5 py-3.5 text-xs font-bold uppercase text-primary hover:bg-accent-50 transition-colors"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="flex items-center gap-4">
+                      {Icon && <Icon size={16} className="text-accent-600" />}
+                      {item.label}
+                    </span>
+                    <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {isOpen && (
+                    <div className="mb-2 ml-9 border-l-2 border-accent-100 pl-3">
+                      {item.sub.map((subItem) => {
+                        const label = typeof subItem === "string" ? subItem : subItem.label;
+                        const href = typeof subItem === "string" ? "/" : subItem.href;
+                        const isExternal = typeof subItem !== "string" && subItem.isExternal;
+                        const classes = "block rounded-lg px-4 py-3 text-xs font-semibold text-slate-600 hover:bg-accent-50 hover:text-primary";
+
+                        return isExternal ? (
+                          <a
+                            key={label}
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setMenuOpen(false)}
+                            className={classes}
+                          >
+                            {label}
+                          </a>
+                        ) : (
+                          <Link
+                            key={label}
+                            to={href}
+                            onClick={() => setMenuOpen(false)}
+                            className={classes}
+                          >
+                            {label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

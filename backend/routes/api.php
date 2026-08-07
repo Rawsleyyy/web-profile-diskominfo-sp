@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DokumenController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LayananController;
 use App\Http\Controllers\Api\LogActivityController;
+use App\Http\Controllers\Api\HeroSlideController;
 use App\Http\Controllers\Api\PejabatController;
 use App\Http\Controllers\Api\PodcastController;
 use App\Http\Controllers\Api\SkmController;
@@ -47,6 +48,7 @@ Route::get('/podcast', [PodcastController::class, 'index']);
 Route::get('/layanan', [LayananController::class, 'index']);
 Route::get('/kategori', [KategoriController::class, 'index']);
 Route::get('/theme', [ThemeSettingController::class, 'index']);
+Route::get('/hero-slides', [HeroSlideController::class, 'index']);
 Route::post('/skm/store', [SkmController::class, 'store'])->middleware('throttle:10,1');
 Route::get('/skm/stats', [SkmController::class, 'getStats']);
 

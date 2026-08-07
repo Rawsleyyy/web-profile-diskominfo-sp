@@ -13,11 +13,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect autentikasi
+        |--------------------------------------------------------------------------
+        | Belum login  -> halaman login admin
+        | Sudah login  -> dashboard admin
+        */
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => route('admin.login')
+        );
 
-        // 👈 1. TAMBAHKAN BARIS INI UNTUK MENCATAT PENGUNJUNG WEB:
+        $middleware->redirectUsersTo(
+            fn (Request $request) => route('admin.dashboard')
+        );
+
         $middleware->web(append: [
             \App\Http\Middleware\TrackVisitor::class,
+            \App\Http\Middleware\EnsureUserIsActive::class,
             \App\Http\Middleware\ExpireAdminSession::class,
         ]);
 

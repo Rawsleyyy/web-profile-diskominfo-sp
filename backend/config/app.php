@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    // Dapat diarahkan ke halaman login React, misalnya http://localhost:5173/login.
+    // Halaman login admin dirender langsung oleh Laravel.
     'admin_login_url' => env(
         'ADMIN_LOGIN_URL',
         rtrim((string) env('APP_URL', 'http://localhost'), '/').'/admin/login'

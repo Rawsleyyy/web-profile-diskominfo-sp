@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/footer";
 
-// Pages
 import Home from "./pages/Home";
 import VisiMisi from "./pages/VisiMisi";
 import Tupoksi from "./pages/Tupoksi";
@@ -16,38 +15,31 @@ import SKMForm from "./pages/SKMForm";
 import MaklumatPelayanan from "./pages/MaklumatPelayanan";
 import PPIDPage from "./pages/PPIDPage";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
-import Login from './pages/Login';
 
-const AppContent = ({ dark, toggleDark }) => {
-  const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+const AppContent = ({ dark, toggleDark }) => (
+  <div className="app-background antialiased min-h-screen flex flex-col font-sans transition-colors">
+    <Navbar dark={dark} toggleDark={toggleDark} />
 
-  return (
-    <div className="app-background antialiased min-h-screen flex flex-col font-sans transition-colors">
-      {!isLoginPage && <Navbar dark={dark} toggleDark={toggleDark} />}
+    <main className="flex-grow">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/visi-misi" element={<VisiMisi />} />
+        <Route path="/tupoksi" element={<Tupoksi />} />
+        <Route path="/artikel" element={<ArtikelList />} />
+        <Route path="/artikel/:id" element={<ArtikelDetail />} />
+        <Route path="/publikasi" element={<PublikasiList />} />
+        <Route path="/publikasi/:id" element={<PublikasiDetail />} />
+        <Route path="/skm" element={<SKMForm />} />
+        <Route path="/maklumat" element={<MaklumatPelayanan />} />
+        <Route path="/ppid" element={<PPIDPage />} />
+        <Route path="/struktur" element={<StrukturOrganisasi />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </main>
 
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/visi-misi" element={<VisiMisi />} />
-          <Route path="/tupoksi" element={<Tupoksi />} />
-          <Route path="/artikel" element={<ArtikelList />} />
-          <Route path="/artikel/:id" element={<ArtikelDetail />} />
-          <Route path="/publikasi" element={<PublikasiList />} />
-          <Route path="/publikasi/:id" element={<PublikasiDetail />} />
-          <Route path="/skm" element={<SKMForm />} />
-          <Route path="/maklumat" element={<MaklumatPelayanan />} />
-          <Route path="/ppid" element={<PPIDPage />} />
-          <Route path="/struktur" element={<StrukturOrganisasi />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-
-      {!isLoginPage && <Footer />}
-    </div>
-  );
-};
+    <Footer />
+  </div>
+);
 
 function App() {
   const [dark, setDark] = useState(() => {

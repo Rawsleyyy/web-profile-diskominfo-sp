@@ -76,13 +76,25 @@ const SKMSurveyForm = () => {
       .catch(err => console.error("Gagal ambil statistik:", err));
   };
 
-  // Fetch daftar layanan & statistik saat komponen dimuat
+  // Fetch daftar layanan dan statistik saat komponen dimuat.
   useEffect(() => {
+    let active = true;
 
-  api.get('/layanan')
-    .then(res => setServices(res.data))
-    .catch(err => console.error('Gagal memuat daftar layanan:', err));
-}, []);
+    Promise.all([
+      api.get('/layanan'),
+      api.get('/skm/stats'),
+    ])
+      .then(([servicesResponse, statsResponse]) => {
+        if (!active) return;
+        setServices(Array.isArray(servicesResponse.data) ? servicesResponse.data : []);
+        setStats(statsResponse.data);
+      })
+      .catch(err => console.error('Gagal memuat data SKM:', err));
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleServiceChange = (e) => {
     const id = e.target.value;
@@ -187,12 +199,12 @@ const SKMSurveyForm = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">No. WhatsApp *</label>
-                  <input type="text" name="no_whatsapp" required value={formData.no_whatsapp} onChange={handleChange} className="w-full p-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary/40" placeholder="08xxxxxxxxxx" />
+                  <input type="tel" name="no_whatsapp" required inputMode="tel" pattern="(?:\+62|62|0)8[1-9][0-9]{6,11}" value={formData.no_whatsapp} onChange={handleChange} className="w-full p-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary/40" placeholder="081234567890" />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">Usia (Tahun) *</label>
-                  <input type="number" name="usia" required value={formData.usia} onChange={handleChange} className="w-full p-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary/40" placeholder="Contoh: 25" />
+                  <input type="number" name="usia" required min="15" max="100" value={formData.usia} onChange={handleChange} className="w-full p-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary/40" placeholder="Contoh: 25" />
                 </div>
 
                 <div>
@@ -234,15 +246,15 @@ const SKMSurveyForm = () => {
                 <ClipboardList className="w-5 h-5 text-primary-700" /> Pendapat Responden Tentang Pelayanan
               </h2>
 
-              <QuestionItem id="1" q={`Bagaimana pendapat saudara tentang kesesuaian persyaratan pelayanan ${selectedServiceName} yang diberikan?`} name="jawaban_1" options={["Sangat Sesuai", "Sesuai", "Kurang Sesuai", "Tidak Sesuai"]} onChange={handleChange} />
-              <QuestionItem id="2" q={`Bagaimana pendapat saudara tentang kemudahan prosedur mendapatkan pelayanan ${selectedServiceName} di unit ini?`} name="jawaban_2" options={["Sangat Mudah", "Mudah", "Kurang Mudah", "Tidak Mudah"]} onChange={handleChange} />
-              <QuestionItem id="3" q={`Bagaimana pendapat saudara tentang kecepatan waktu pelayanan ${selectedServiceName}?`} name="jawaban_3" options={["Sangat Cepat", "Cepat", "Kurang Cepat", "Tidak Cepat"]} onChange={handleChange} />
-              <QuestionItem id="4" q={`Apakah biaya pelayanan ${selectedServiceName} sudah sesuai dengan ketentuan yang telah ditetapkan?`} name="jawaban_4" options={["Gratis / Sesuai Ketentuan", "Murah", "Cukup Mahal", "Sangat Mahal"]} onChange={handleChange} />
-              <QuestionItem id="5" q="Apakah produk layanan yang diminta sesuai dengan yang dimohonkan?" name="jawaban_5" options={["Sangat Sesuai", "Sesuai", "Kurang Sesuai", "Tidak Sesuai"]} onChange={handleChange} />
-              <QuestionItem id="6" q="Bagaimana pendapat Saudara tentang kompetensi/ kemampuan petugas dalam memberikan pelayanan?" name="jawaban_6" options={["Sangat Kompeten", "Kompeten", "Kurang Kompeten", "Tidak Kompeten"]} onChange={handleChange} />
-              <QuestionItem id="7" q="Bagaimana pendapat saudara terhadap perilaku petugas dalam pelayanan terkait kesopanan dan keramahan?" name="jawaban_7" options={["Sangat Sopan dan Ramah", "Sopan dan Ramah", "Kurang Sopan dan Ramah", "Tidak Sopan dan Ramah"]} onChange={handleChange} />
-              <QuestionItem id="8" q="Bagaimana pendapat saudara tentang penanganan pengaduan pengguna layanan pada instansi ini?" name="jawaban_8" options={["Dikelola dengan baik", "Kurang Maksimal", "Tidak Berfungsi", "Tidak Ada Sarana"]} onChange={handleChange} />
-              <QuestionItem id="9" q="Bagaimana pendapat Saudara tentang kualitas Sarana dan Prasarana?" name="jawaban_9" options={["Sangat Baik", "Baik", "Cukup", "Buruk"]} onChange={handleChange} />
+              <QuestionItem id="1" q={`Bagaimana pendapat saudara tentang kesesuaian persyaratan pelayanan ${selectedServiceName} yang diberikan?`} name="jawaban_1" value={formData.jawaban_1} options={["Sangat Sesuai", "Sesuai", "Kurang Sesuai", "Tidak Sesuai"]} onChange={handleChange} />
+              <QuestionItem id="2" q={`Bagaimana pendapat saudara tentang kemudahan prosedur mendapatkan pelayanan ${selectedServiceName} di unit ini?`} name="jawaban_2" value={formData.jawaban_2} options={["Sangat Mudah", "Mudah", "Kurang Mudah", "Tidak Mudah"]} onChange={handleChange} />
+              <QuestionItem id="3" q={`Bagaimana pendapat saudara tentang kecepatan waktu pelayanan ${selectedServiceName}?`} name="jawaban_3" value={formData.jawaban_3} options={["Sangat Cepat", "Cepat", "Kurang Cepat", "Tidak Cepat"]} onChange={handleChange} />
+              <QuestionItem id="4" q={`Apakah biaya pelayanan ${selectedServiceName} sudah sesuai dengan ketentuan yang telah ditetapkan?`} name="jawaban_4" value={formData.jawaban_4} options={["Gratis / Sesuai Ketentuan", "Murah", "Cukup Mahal", "Sangat Mahal"]} onChange={handleChange} />
+              <QuestionItem id="5" q="Apakah produk layanan yang diminta sesuai dengan yang dimohonkan?" name="jawaban_5" value={formData.jawaban_5} options={["Sangat Sesuai", "Sesuai", "Kurang Sesuai", "Tidak Sesuai"]} onChange={handleChange} />
+              <QuestionItem id="6" q="Bagaimana pendapat Saudara tentang kompetensi/ kemampuan petugas dalam memberikan pelayanan?" name="jawaban_6" value={formData.jawaban_6} options={["Sangat Kompeten", "Kompeten", "Kurang Kompeten", "Tidak Kompeten"]} onChange={handleChange} />
+              <QuestionItem id="7" q="Bagaimana pendapat saudara terhadap perilaku petugas dalam pelayanan terkait kesopanan dan keramahan?" name="jawaban_7" value={formData.jawaban_7} options={["Sangat Sopan dan Ramah", "Sopan dan Ramah", "Kurang Sopan dan Ramah", "Tidak Sopan dan Ramah"]} onChange={handleChange} />
+              <QuestionItem id="8" q="Bagaimana pendapat saudara tentang penanganan pengaduan pengguna layanan pada instansi ini?" name="jawaban_8" value={formData.jawaban_8} options={["Dikelola dengan baik", "Kurang Maksimal", "Tidak Berfungsi", "Tidak Ada Sarana"]} onChange={handleChange} />
+              <QuestionItem id="9" q="Bagaimana pendapat Saudara tentang kualitas Sarana dan Prasarana?" name="jawaban_9" value={formData.jawaban_9} options={["Sangat Baik", "Baik", "Cukup", "Buruk"]} onChange={handleChange} />
 
               <div className="pt-6">
                 <label className="block text-sm font-bold text-slate-700 mb-3">Saran dan Masukan</label>
@@ -269,13 +281,13 @@ const SKMSurveyForm = () => {
 // ==========================================
 // 3. REUSABLE QUESTION ITEM
 // ==========================================
-const QuestionItem = ({ id, q, name, options, onChange }) => (
+const QuestionItem = ({ id, q, name, value, options, onChange }) => (
   <div className="space-y-4">
     <p className="text-slate-800 font-bold leading-relaxed">{id}. {q} <span className="text-red-500">*</span></p>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {options.map((opt, i) => (
         <label key={i} className="flex items-center gap-3 p-3.5 rounded-xl border-2 border-slate-100 hover:border-primary-200 cursor-pointer transition-all bg-slate-50/50 has-[:checked]:border-primary has-[:checked]:bg-primary-50/50 font-medium text-sm text-slate-700">
-          <input type="radio" name={name} value={opt} required onChange={onChange} className="w-4 h-4 text-primary focus:ring-primary/40" />
+          <input type="radio" name={name} value={opt} checked={value === opt} required onChange={onChange} className="w-4 h-4 text-primary focus:ring-primary/40" />
           {opt}
         </label>
       ))}

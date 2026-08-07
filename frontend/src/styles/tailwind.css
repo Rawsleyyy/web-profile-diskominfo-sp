@@ -22,12 +22,12 @@
   }
 
   .dark .app-background {
-    background-color: #0f172a;
-    background-image:
-      radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 14%, transparent) 0%, transparent 45%),
-      radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 40%),
-      radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 45%),
-      radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 40%);
+  background-color: #020617;
+  background-image:
+    radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 8%, transparent) 0%, transparent 36%),
+    radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 10%, transparent) 0%, transparent 34%),
+    radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 8%, transparent) 0%, transparent 36%),
+    radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 6%, transparent) 0%, transparent 32%);
   }
 }
 

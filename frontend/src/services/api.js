@@ -14,18 +14,6 @@ export const api = axios.create({
   },
 });
 
-export const authApi = axios.create({
-  baseURL: "",
-  timeout: 15000,
-  withCredentials: true,
-  xsrfCookieName: "XSRF-TOKEN",
-  xsrfHeaderName: "X-XSRF-TOKEN",
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  },
-});
-
 export function storageUrl(path) {
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;

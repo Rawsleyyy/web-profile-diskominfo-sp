@@ -34,6 +34,11 @@
             <span>Theme Settings</span>
         </a>
 
+        <a href="{{ route('admin.header') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.header') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+            <span>&#128444;</span>
+            <span>Kelola Header</span>
+        </a>
+
         <a href="{{ route('admin.berita') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.berita') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
             <span>&#128240;</span>
             <span>Kelola Berita</span>
