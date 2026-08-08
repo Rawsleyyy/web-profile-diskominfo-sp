@@ -1,13 +1,31 @@
-import { useState, useRef, useEffect } from "react";
-import { Search, Menu, X, ChevronDown, Moon, Sun, Home, FileText, Info, Star, Newspaper, ClipboardList, Clock } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronDown,
+  ClipboardList,
+  Clock,
+  FileText,
+  Home,
+  Info,
+  Menu,
+  Moon,
+  Newspaper,
+  Search,
+  Star,
+  Sun,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDateTime } from "@/hooks/UseDateTime";
 import { navMenus } from "../../data";
 import logoNavbar from "../../assets/diskomifo-pemkot.png";
 
-// Mapping icon string ke komponen Lucide
 const iconMap = {
-  Home, FileText, Info, Star, Newspaper, ClipboardList,
+  Home,
+  FileText,
+  Info,
+  Star,
+  Newspaper,
+  ClipboardList,
 };
 
 export default function Navbar({ dark, toggleDark }) {
@@ -16,119 +34,153 @@ export default function Navbar({ dark, toggleDark }) {
   const [mobileDrop, setMobileDrop] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef(null);
-
   const currentDateTime = useDateTime();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    handleScroll(); // cek posisi awal (misal reload di tengah scroll)
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+  }, []);
+
   const openDropdown = (label) => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
     setDrop(label);
   };
+
   const closeDropdownDelayed = () => {
-    closeTimer.current = setTimeout(() => setDrop(null), 200);
+    closeTimer.current = window.setTimeout(() => setDrop(null), 180);
+  };
+
+  const closeMobileMenu = () => {
+    setMenuOpen(false);
+    setMobileDrop(null);
+  };
+
+  const renderSubLink = (subItem, mobile = false) => {
+    const label = typeof subItem === "string" ? subItem : subItem.label;
+    const href = typeof subItem === "string" ? "/" : (subItem.href || "/");
+    const isExternal = typeof subItem !== "string" && subItem.isExternal;
+    const classes = mobile
+      ? "theme-popover-link block rounded-xl px-4 py-3 text-xs font-semibold transition-colors"
+      : "theme-popover-link block border-b px-5 py-3 text-[12px] font-semibold transition-colors last:border-0";
+
+    const style = mobile ? undefined : { borderColor: "var(--line-default)" };
+
+    if (isExternal) {
+      return (
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={mobile ? closeMobileMenu : undefined}
+          className={classes}
+          style={style}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        key={label}
+        to={href}
+        onClick={mobile ? closeMobileMenu : undefined}
+        className={classes}
+        style={style}
+      >
+        {label}
+      </Link>
+    );
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 font-sans">
-      {/* 1. TOP UTILITY BAR*/}
+    <header className="fixed inset-x-0 top-0 z-50 font-sans">
       <div
-        className={`hidden md:block border-b border-white/10 overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`theme-navbar-top hidden overflow-hidden border-b border-white/10 transition-all duration-300 ease-in-out md:block ${
           scrolled ? "max-h-0 opacity-0" : "max-h-12 opacity-100"
         }`}
-        style={{ background: "#1c2030" }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
-          <span className="flex items-center gap-2 text-slate-300 text-[11px] font-semibold uppercase tracking-wider">
-            <Clock size={12} className="text-slate-400" />
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
+          <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-white/75">
+            <Clock size={12} className="text-white/55" />
             {currentDateTime}
           </span>
 
           <div className="flex items-center gap-1">
-            <div className="flex items-center gap-3 pr-4 border-r border-white/15">
-              <i className="bi bi-instagram text-slate-400 hover:text-white cursor-pointer transition-colors text-[14px]"></i>
-              <i className="bi bi-facebook text-slate-400 hover:text-white cursor-pointer transition-colors text-[14px]"></i>
-              <i className="bi bi-youtube text-slate-400 hover:text-white cursor-pointer transition-colors text-[14px]"></i>
+            <div className="flex items-center gap-3 border-r border-white/15 pr-4">
+              <i className="bi bi-instagram cursor-pointer text-[14px] text-white/60 transition-colors hover:text-white" />
+              <i className="bi bi-facebook cursor-pointer text-[14px] text-white/60 transition-colors hover:text-white" />
+              <i className="bi bi-youtube cursor-pointer text-[14px] text-white/60 transition-colors hover:text-white" />
             </div>
-            <a href="tel:02718060" className="pl-4 text-slate-300 text-[11px] font-semibold hover:text-white transition-colors">
+            <a
+              href="tel:0271806060"
+              className="pl-4 text-[11px] font-semibold text-white/75 transition-colors hover:text-white"
+            >
               (0271) 806060
             </a>
             <span className="mx-2 text-white/15">|</span>
-            <a href="mailto:diskominfosp@surakarta.go.id" className="text-slate-300 text-[11px] font-semibold hover:text-white transition-colors">
+            <a
+              href="mailto:diskominfosp@surakarta.go.id"
+              className="text-[11px] font-semibold text-white/75 transition-colors hover:text-white"
+            >
               diskominfosp@surakarta.go.id
             </a>
           </div>
         </div>
       </div>
 
-      {/* 2. MAIN NAV*/}
       <div
         className={`transition-all duration-300 ease-in-out ${
-          scrolled ? "px-4 pt-2 pb-1.5" : "px-0 pt-0 pb-0"
+          scrolled ? "px-4 pb-1.5 pt-2" : "px-0 pb-0 pt-0"
         }`}
       >
         <div
-          className={`mx-auto flex items-center justify-between backdrop-blur-xl border-white/20 transition-all duration-300 ease-in-out relative ${
+          className={`theme-navbar-surface relative mx-auto flex items-center justify-between border-white/20 backdrop-blur-xl transition-all duration-300 ease-in-out ${
             scrolled
               ? "max-w-7xl rounded-2xl border px-5 py-2.5"
-              : "max-w-full rounded-none border-x-0 border-t-0 border-b px-6 py-3.5"
+              : "max-w-full rounded-none border-x-0 border-b border-t-0 px-6 py-3.5"
           }`}
           style={{
-            background: "linear-gradient(135deg, rgba(21,35,75,0.95) 0%, rgba(30,79,146,0.95) 50%, rgba(41,168,224,0.95) 100%)",
             boxShadow: scrolled
-              ? "0 4px 24px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.2)"
+              ? "0 5px 26px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.18)"
               : "none",
           }}
         >
-          {/* ========================================================
-              ELEMEN BATIK RANDOM (Dibungkus div terpisah dengan overflow-hidden)
-              ======================================================== */}
-          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-inherit">
-            {/* Ornamen Batik 1 */}
-            <svg className="absolute -top-6 left-10 w-24 h-24 text-white opacity-[0.04] rotate-12" viewBox="0 0 100 100" fill="currentColor">
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]">
+            <svg className="absolute -top-6 left-10 h-24 w-24 rotate-12 text-white opacity-[0.04]" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
               <path d="M50,0 C60,30 80,40 100,50 C80,60 60,70 50,100 C40,70 20,60 0,50 C20,40 40,30 50,0 Z" />
-              <circle cx="50" cy="50" r="10" fill="transparent" stroke="currentColor" strokeWidth="4"/>
+              <circle cx="50" cy="50" r="10" fill="transparent" stroke="currentColor" strokeWidth="4" />
             </svg>
-            {/* Ornamen Batik 2 */}
-            <svg className="absolute top-4 left-1/4 w-12 h-12 text-white opacity-[0.06] -rotate-45" viewBox="0 0 100 100" fill="currentColor">
+            <svg className="absolute left-1/4 top-4 h-12 w-12 -rotate-45 text-white opacity-[0.06]" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
               <path d="M50,0 C60,30 80,40 100,50 C80,60 60,70 50,100 C40,70 20,60 0,50 C20,40 40,30 50,0 Z" />
             </svg>
-            {/* Ornamen Batik 3 */}
-            <svg className="absolute -bottom-10 left-1/2 w-32 h-32 text-white opacity-[0.03] rotate-45" viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50,0 C60,30 80,40 100,50 C80,60 60,70 50,100 C40,70 20,60 0,50 C20,40 40,30 50,0 Z" />
-              <circle cx="50" cy="50" r="12" fill="transparent" stroke="currentColor" strokeWidth="3"/>
-            </svg>
-            {/* Ornamen Batik 4 */}
-            <svg className="absolute top-1 right-1/3 w-16 h-16 text-white opacity-[0.05] rotate-90" viewBox="0 0 100 100" fill="currentColor">
+            <svg className="absolute -bottom-10 left-1/2 h-32 w-32 rotate-45 text-white opacity-[0.03]" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
               <path d="M50,0 C60,30 80,40 100,50 C80,60 60,70 50,100 C40,70 20,60 0,50 C20,40 40,30 50,0 Z" />
             </svg>
-            {/* Ornamen Batik 5 */}
-            <svg className="absolute -top-4 right-12 w-20 h-20 text-white opacity-[0.04] -rotate-12" viewBox="0 0 100 100" fill="currentColor">
+            <svg className="absolute right-12 -top-4 h-20 w-20 -rotate-12 text-white opacity-[0.04]" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
               <path d="M50,0 C60,30 80,40 100,50 C80,60 60,70 50,100 C40,70 20,60 0,50 C20,40 40,30 50,0 Z" />
-              <circle cx="50" cy="50" r="8" fill="transparent" stroke="currentColor" strokeWidth="5"/>
             </svg>
           </div>
 
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-4 group relative z-10">
-            <div>
-              <img 
-                src={logoNavbar} 
-                alt="Logo Diskominfo" 
-                className="h-10 md:h-11 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
-              />
-            </div>
+          <Link to="/" className="group relative z-10 flex items-center gap-4">
+            <img
+              src={logoNavbar}
+              alt="Logo Diskominfo"
+              className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 md:h-11"
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 relative z-10">
+          <nav className="relative z-10 hidden items-center gap-1 lg:flex">
             {navMenus.map((item) => {
               const Icon = iconMap[item.icon];
+
               return (
                 <div
                   key={item.label}
@@ -137,43 +189,30 @@ export default function Navbar({ dark, toggleDark }) {
                   onMouseLeave={closeDropdownDelayed}
                 >
                   <Link
-                    to={item.href.startsWith('#') ? '#' : item.href}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-tight text-white/85 hover:text-white hover:bg-white/15 transition-colors duration-200"
+                    to={item.href.startsWith("#") ? "#" : item.href}
+                    className="flex items-center gap-2 rounded-xl px-4 py-2 text-[11px] font-bold uppercase tracking-tight text-white/85 transition-colors duration-200 hover:bg-white/15 hover:text-white"
                   >
-                    {Icon && <Icon size={14} className="text-accent-300" />}
+                    {Icon && <Icon size={14} className="theme-navbar-accent" />}
                     {item.label}
                     {item.sub && (
                       <ChevronDown
                         size={10}
-                        className={`text-accent-300/80 transition-transform duration-200 ${drop === item.label ? "rotate-180" : ""}`}
+                        className={`theme-navbar-accent transition-transform duration-200 ${
+                          drop === item.label ? "rotate-180" : ""
+                        }`}
                       />
                     )}
                   </Link>
 
-                  {/* Dropdown Menu */}
                   {item.sub && drop === item.label && (
                     <div
-                      onMouseEnter={() => clearTimeout(closeTimer.current)}
+                      onMouseEnter={() => {
+                        if (closeTimer.current) window.clearTimeout(closeTimer.current);
+                      }}
                       onMouseLeave={closeDropdownDelayed}
-                      className="absolute top-full left-0 mt-2 min-w-64 rounded-2xl border border-primary/15 shadow-[0_8px_32px_rgba(0,0,0,0.18)] py-2 z-50 backdrop-blur-xl"
-                      style={{ background: "rgba(255,255,255,0.97)" }}
+                      className="theme-popover absolute left-0 top-full z-50 mt-2 min-w-64 overflow-hidden rounded-2xl border py-2"
                     >
-                      {item.sub.map((subItem) => {
-                        const label = typeof subItem === "string" ? subItem : subItem.label;
-                        const href = typeof subItem === "string" ? "/" : (subItem.href || "/");
-                        const isExternal = typeof subItem !== "string" && subItem.isExternal;
-                        const classes = "block px-5 py-3 text-[12px] text-primary font-semibold hover:bg-accent-50 transition-colors border-b border-slate-50 last:border-0";
-
-                        return isExternal ? (
-                          <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={classes}>
-                            {label}
-                          </a>
-                        ) : (
-                          <Link key={label} to={href} className={classes}>
-                            {label}
-                          </Link>
-                        );
-                      })}
+                      {item.sub.map((subItem) => renderSubLink(subItem))}
                     </div>
                   )}
                 </div>
@@ -181,33 +220,37 @@ export default function Navbar({ dark, toggleDark }) {
             })}
           </nav>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 relative z-10">
-            <button className="w-8 h-8 rounded-xl bg-white/12 border border-white/20 flex items-center justify-center text-white hover:bg-white/22 transition-all">
+          <div className="relative z-10 flex items-center gap-2">
+            <button
+              type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition-all hover:bg-white/20"
+              aria-label="Cari"
+            >
               <Search size={15} />
             </button>
             <button
+              type="button"
               onClick={toggleDark}
-              className="w-8 h-8 rounded-xl bg-white/12 border border-white/20 flex items-center justify-center text-white hover:bg-white/22 transition-all"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition-all hover:bg-white/20"
               title={dark ? "Mode Terang" : "Mode Gelap"}
+              aria-label={dark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
             >
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="lg:hidden w-8 h-8 rounded-xl bg-white/12 border border-white/20 flex items-center justify-center text-white"
+              type="button"
+              onClick={() => setMenuOpen((current) => !current)}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white lg:hidden"
+              aria-label="Buka menu navigasi"
+              aria-expanded={menuOpen}
             >
               {menuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {menuOpen && (
-          <div
-            className="lg:hidden max-w-7xl mx-auto mt-2 rounded-2xl border border-primary/15 shadow-[0_8px_32px_rgba(0,0,0,0.15)] p-3 backdrop-blur-xl max-h-[70vh] overflow-y-auto"
-            style={{ background: "rgba(255,255,255,0.97)" }}
-          >
+          <div className="theme-popover mx-auto mt-2 max-h-[70vh] max-w-7xl overflow-y-auto rounded-2xl border p-3 lg:hidden">
             {navMenus.map((item) => {
               const Icon = iconMap[item.icon];
 
@@ -216,10 +259,10 @@ export default function Navbar({ dark, toggleDark }) {
                   <Link
                     key={item.label}
                     to={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-4 px-5 py-3.5 rounded-xl text-xs font-bold uppercase text-primary hover:bg-accent-50 transition-colors"
+                    onClick={closeMobileMenu}
+                    className="theme-popover-link flex items-center gap-4 rounded-xl px-5 py-3.5 text-xs font-bold uppercase transition-colors"
                   >
-                    {Icon && <Icon size={16} className="text-accent-600" />}
+                    {Icon && <Icon size={16} className="theme-brand-text" />}
                     {item.label}
                   </Link>
                 );
@@ -228,50 +271,23 @@ export default function Navbar({ dark, toggleDark }) {
               const isOpen = mobileDrop === item.label;
 
               return (
-                <div key={item.label} className="border-b border-slate-100 last:border-0">
+                <div key={item.label} className="border-b last:border-0" style={{ borderColor: "var(--line-default)" }}>
                   <button
                     type="button"
                     onClick={() => setMobileDrop(isOpen ? null : item.label)}
-                    className="flex w-full items-center justify-between rounded-xl px-5 py-3.5 text-xs font-bold uppercase text-primary hover:bg-accent-50 transition-colors"
+                    className="theme-popover-link flex w-full items-center justify-between rounded-xl px-5 py-3.5 text-xs font-bold uppercase transition-colors"
                     aria-expanded={isOpen}
                   >
                     <span className="flex items-center gap-4">
-                      {Icon && <Icon size={16} className="text-accent-600" />}
+                      {Icon && <Icon size={16} className="theme-brand-text" />}
                       {item.label}
                     </span>
                     <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
                   {isOpen && (
-                    <div className="mb-2 ml-9 border-l-2 border-accent-100 pl-3">
-                      {item.sub.map((subItem) => {
-                        const label = typeof subItem === "string" ? subItem : subItem.label;
-                        const href = typeof subItem === "string" ? "/" : subItem.href;
-                        const isExternal = typeof subItem !== "string" && subItem.isExternal;
-                        const classes = "block rounded-lg px-4 py-3 text-xs font-semibold text-slate-600 hover:bg-accent-50 hover:text-primary";
-
-                        return isExternal ? (
-                          <a
-                            key={label}
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => setMenuOpen(false)}
-                            className={classes}
-                          >
-                            {label}
-                          </a>
-                        ) : (
-                          <Link
-                            key={label}
-                            to={href}
-                            onClick={() => setMenuOpen(false)}
-                            className={classes}
-                          >
-                            {label}
-                          </Link>
-                        );
-                      })}
+                    <div className="mb-2 ml-9 border-l-2 pl-3" style={{ borderColor: "var(--theme-border-light)" }}>
+                      {item.sub.map((subItem) => renderSubLink(subItem, true))}
                     </div>
                   )}
                 </div>

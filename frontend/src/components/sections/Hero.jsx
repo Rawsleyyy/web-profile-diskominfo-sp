@@ -71,7 +71,7 @@ export default function Hero() {
   const next = () => setCurrent((index) => (index + 1) % banners.length);
 
   return (
-    <section className="relative h-[500px] md:h-[600px] w-full overflow-hidden">
+    <section className="theme-hero relative h-[500px] md:h-[600px] w-full overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={activeBanner.id}
@@ -86,7 +86,7 @@ export default function Hero() {
             className="h-full w-full object-cover"
             alt={activeBanner.alt_text || activeBanner.title || "Header Diskominfo SP"}
           />
-          <div className="absolute inset-0 flex items-center bg-gradient-to-r from-primary/90 via-primary/40 to-transparent px-6 md:px-20">
+          <div className="theme-hero-overlay absolute inset-0 flex items-center px-6 md:px-20">
             <div className="max-w-3xl text-white">
               <h1 className="mb-6 text-4xl font-bold leading-none tracking-tight md:text-6xl">
                 {activeBanner.title}
@@ -101,7 +101,7 @@ export default function Hero() {
                   href={activeBanner.button_url}
                   target={/^https?:\/\//i.test(activeBanner.button_url) ? "_blank" : undefined}
                   rel={/^https?:\/\//i.test(activeBanner.button_url) ? "noopener noreferrer" : undefined}
-                  className="mt-7 inline-flex rounded-xl bg-white px-5 py-3 text-sm font-black text-primary shadow-lg transition hover:-translate-y-0.5"
+                  className="keep-light-surface mt-7 inline-flex rounded-xl px-5 py-3 text-sm font-black shadow-lg transition hover:-translate-y-0.5"
                 >
                   {activeBanner.button_label}
                 </a>

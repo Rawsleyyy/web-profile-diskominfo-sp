@@ -9,16 +9,6 @@ function getFileUrl(item) {
   return `${BASE_URL}/storage/${item.file_path}`;
 }
 
-function getThumbUrl(item) {
-  if (!item.thumbnail) return null;
-  if (item.thumbnail.startsWith("http")) return item.thumbnail;
-  return `${BASE_URL}/storage/${item.thumbnail}`;
-}
-
-// --- Helper baru khusus podcast ---
-
-// Sama seperti getFileUrl, tapi untuk url_audio: kalau relatif, tambahkan BASE_URL.
-// Ini yang tadinya hilang -> penyebab blank page waktu play file upload.
 function resolveAudioUrl(urlAudio) {
   if (!urlAudio) return null;
   if (urlAudio.startsWith("http")) return urlAudio;
@@ -26,34 +16,31 @@ function resolveAudioUrl(urlAudio) {
 }
 
 function getYoutubeEmbedUrl(url) {
-  // Menangani format: youtu.be/ID, youtube.com/watch?v=ID, youtube.com/embed/ID
   const patterns = [
     /youtu\.be\/([a-zA-Z0-9_-]+)/,
     /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
     /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
   ];
+
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
   }
+
   return null;
 }
 
 function getSpotifyEmbedUrl(url) {
-  // open.spotify.com/episode/XXX -> open.spotify.com/embed/episode/XXX
   if (url.includes("/embed/")) return url;
   return url.replace("open.spotify.com/", "open.spotify.com/embed/");
 }
 
-// Mendeteksi tipe sumber murni dari isi URL-nya (tidak bergantung field tipe_sumber dari API)
 function detectSourceType(urlAudio) {
   if (!urlAudio) return null;
   if (urlAudio.includes("youtube.com") || urlAudio.includes("youtu.be")) return "youtube";
   if (urlAudio.includes("spotify.com")) return "spotify";
   return "file";
 }
-
-// --- Modal Player ---
 
 function PodcastPlayerModal({ podcast, onClose }) {
   if (!podcast) return null;
@@ -62,32 +49,37 @@ function PodcastPlayerModal({ podcast, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
       onClick={onClose}
+      role="presentation"
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 relative"
-        onClick={(e) => e.stopPropagation()}
+        className="theme-card relative w-full max-w-lg rounded-3xl p-6"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Pemutar podcast ${podcast.judul}`}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-sm"
+          className="theme-muted-surface theme-text-secondary absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-sm transition hover:scale-105"
+          aria-label="Tutup pemutar podcast"
         >
           ✕
         </button>
 
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
+        <h4 className="theme-brand-text mb-1 text-[10px] font-black uppercase tracking-widest">
           {podcast.episode ? `Episode ${podcast.episode}` : "Podcast"}
         </h4>
-        <p className="font-bold text-lg text-slate-800 mb-6 pr-8">{podcast.judul}</p>
+        <p className="theme-text-main mb-6 pr-8 text-lg font-bold">{podcast.judul}</p>
 
         {sourceType === "youtube" && getYoutubeEmbedUrl(podcast.url_audio) && (
-          <div className="aspect-video rounded-2xl overflow-hidden bg-black">
+          <div className="aspect-video overflow-hidden rounded-2xl bg-black">
             <iframe
               src={getYoutubeEmbedUrl(podcast.url_audio)}
               title={podcast.judul}
-              className="w-full h-full"
+              className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
@@ -112,7 +104,9 @@ function PodcastPlayerModal({ podcast, onClose }) {
         )}
 
         {podcast.deskripsi && (
-          <p className="text-xs text-slate-500 mt-4 leading-relaxed">{podcast.deskripsi}</p>
+          <p className="theme-text-secondary mt-4 text-xs leading-relaxed">
+            {podcast.deskripsi}
+          </p>
         )}
       </div>
     </div>
@@ -123,55 +117,64 @@ export default function MediaSection() {
   const [activeTab, setActiveTab] = useState("Rilis Data");
   const [dokumen, setDokumen] = useState([]);
   const [loadingDokumen, setLoadingDokumen] = useState(true);
-
   const [podcasts, setPodcasts] = useState([]);
   const [loadingPodcast, setLoadingPodcast] = useState(true);
-
-  // Podcast yang lagi diputar di modal (null = modal tertutup)
   const [activePlayer, setActivePlayer] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
+
     api.get("/dokumen-publik")
-      .then((res) => {
-        const data = res.data.data || res.data || [];
-        if (isMounted) setDokumen(data);
+      .then((response) => {
+        const data = response.data.data || response.data || [];
+        if (mounted) setDokumen(data);
       })
-      .catch((err) => console.error("Gagal memuat dokumen publik:", err))
-      .finally(() => { if (isMounted) setLoadingDokumen(false); });
-    return () => { isMounted = false; };
+      .catch((error) => console.error("Gagal memuat dokumen publik:", error))
+      .finally(() => mounted && setLoadingDokumen(false));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
+
     api.get("/podcast")
-      .then((res) => {
-        const data = res.data.data || res.data || [];
-        if (isMounted) setPodcasts(data);
+      .then((response) => {
+        const data = response.data.data || response.data || [];
+        if (mounted) setPodcasts(data);
       })
-      .catch((err) => console.error("Gagal memuat podcast:", err))
-      .finally(() => { if (isMounted) setLoadingPodcast(false); });
-    return () => { isMounted = false; };
+      .catch((error) => console.error("Gagal memuat podcast:", error))
+      .finally(() => mounted && setLoadingPodcast(false));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const filteredDokumen = dokumen.filter((d) => d.kategori === activeTab);
+  const filteredDokumen = dokumen.filter((item) => item.kategori === activeTab);
   const [featured, ...restPodcasts] = podcasts;
 
   return (
-    <section className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
-
-        {/* Kolom Dokumen (2/3) */}
+    <section className="theme-section-alt py-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="text-3xl font-black text-slate-800 mb-8 tracking-tighter">Dokumen & Data Publik</h2>
-          <div className="bg-white rounded-[2.5rem] p-4 border border-slate-200 shadow-sm">
-            <div className="flex gap-4 p-2 mb-4 border-b border-slate-100">
+          <h2 className="theme-text-main mb-8 text-3xl font-black tracking-tighter">
+            Dokumen & Data Publik
+          </h2>
+
+          <div className="theme-card rounded-[2.5rem] p-4">
+            <div className="theme-divider mb-4 flex gap-4 border-b p-2">
               {TABS.map((tab) => (
                 <button
                   key={tab}
+                  type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`text-xs font-bold pb-2 px-2 transition ${
-                    activeTab === tab ? "text-primary border-b-2 border-primary" : "text-slate-400 hover:text-primary-700"
+                  className={`border-b-2 px-2 pb-2 text-xs font-bold transition ${
+                    activeTab === tab
+                      ? "theme-brand-text border-current"
+                      : "theme-text-muted border-transparent hover:text-primary"
                   }`}
                 >
                   {tab}
@@ -179,19 +182,33 @@ export default function MediaSection() {
               ))}
             </div>
 
-            <div className="space-y-2 min-h-[120px]">
+            <div className="min-h-[120px] space-y-2">
               {loadingDokumen ? (
-                <p className="text-center text-slate-400 text-xs font-medium py-8">Memuat dokumen...</p>
+                <p className="theme-text-muted py-8 text-center text-xs font-medium">
+                  Memuat dokumen...
+                </p>
               ) : filteredDokumen.length === 0 ? (
-                <p className="text-center text-slate-300 text-xs font-medium italic py-8">Belum ada dokumen untuk kategori ini.</p>
+                <p className="theme-text-muted py-8 text-center text-xs font-medium italic">
+                  Belum ada dokumen untuk kategori ini.
+                </p>
               ) : (
                 filteredDokumen.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition group">
-                    <div className="flex gap-4 items-center min-w-0">
-                      <div className="w-10 h-10 bg-accent-100 text-primary-700 rounded-xl flex items-center justify-center flex-shrink-0"><i className="bi bi-file-earmark-pdf"></i></div>
+                  <div
+                    key={item.id}
+                    className="group flex items-center justify-between rounded-2xl p-4 transition hover:-translate-y-0.5"
+                    style={{ background: "color-mix(in srgb, var(--surface-muted) 55%, transparent)" }}
+                  >
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="theme-chip flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                        <i className="bi bi-file-earmark-pdf" />
+                      </div>
                       <div className="min-w-0">
-                        <h4 className="text-[11px] font-bold text-slate-700 truncate">{item.judul}</h4>
-                        <p className="text-[9px] text-slate-400 uppercase font-medium">{item.ukuran_formatted} — {item.format}</p>
+                        <h4 className="theme-text-main truncate text-[11px] font-bold">
+                          {item.judul}
+                        </h4>
+                        <p className="theme-text-muted text-[9px] font-medium uppercase">
+                          {item.ukuran_formatted} — {item.format}
+                        </p>
                       </div>
                     </div>
                     <a
@@ -199,9 +216,10 @@ export default function MediaSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       download
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-primary-700 bg-accent-50 opacity-0 group-hover:opacity-100 transition flex-shrink-0"
+                      className="theme-chip flex h-8 w-8 shrink-0 items-center justify-center rounded-full opacity-70 transition group-hover:opacity-100"
+                      aria-label={`Unduh ${item.judul}`}
                     >
-                      <i className="bi bi-download"></i>
+                      <i className="bi bi-download" />
                     </a>
                   </div>
                 ))
@@ -210,35 +228,45 @@ export default function MediaSection() {
           </div>
         </div>
 
-        {/* Kolom Media/Podcast (1/3) */}
         <div>
-          <h2 className="text-3xl font-black text-slate-800 mb-8 tracking-tighter">KOMINPOD</h2>
-          <div className="bg-primary rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden min-h-[280px]">
-            <i className="bi bi-mic-fill absolute -right-4 -bottom-4 text-9xl opacity-10 rotate-12"></i>
+          <h2 className="theme-text-main mb-8 text-3xl font-black tracking-tighter">
+            KOMINPOD
+          </h2>
+
+          <div className="theme-panel-gradient relative min-h-[280px] overflow-hidden rounded-[2.5rem] p-8 text-white shadow-xl">
+            <i className="bi bi-mic-fill absolute -bottom-4 -right-4 rotate-12 text-9xl opacity-10" />
 
             {loadingPodcast ? (
-              <p className="text-xs font-medium opacity-70">Memuat podcast...</p>
+              <p className="text-xs font-medium text-white/70">Memuat podcast...</p>
             ) : !featured ? (
-              <p className="text-xs font-medium opacity-70 italic">Belum ada episode podcast.</p>
+              <p className="text-xs font-medium italic text-white/70">
+                Belum ada episode podcast.
+              </p>
             ) : (
               <>
-                <h4 className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Podcast Terbaru</h4>
-                <p className="font-bold text-lg leading-tight mb-8">
-                  {featured.episode ? `Ep. ${featured.episode} — ` : ""}{featured.judul}
+                <h4 className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/60">
+                  Podcast Terbaru
+                </h4>
+                <p className="mb-8 text-lg font-bold leading-tight">
+                  {featured.episode ? `Ep. ${featured.episode} — ` : ""}
+                  {featured.judul}
                 </p>
 
                 {restPodcasts.length > 0 && (
                   <div className="space-y-4">
-                    {restPodcasts.slice(0, 2).map((p) => (
+                    {restPodcasts.slice(0, 2).map((podcast) => (
                       <button
-                        key={p.id}
+                        key={podcast.id}
                         type="button"
-                        onClick={() => setActivePlayer(p)}
-                        className="w-full flex items-center gap-4 bg-white/10 p-3 rounded-2xl border border-white/10 backdrop-blur-sm hover:bg-white/20 transition text-left"
+                        onClick={() => setActivePlayer(podcast)}
+                        className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-3 text-left backdrop-blur-sm transition hover:bg-white/20"
                       >
-                        <div className="w-8 h-8 rounded-full bg-white text-primary flex items-center justify-center text-xs flex-shrink-0"><i className="bi bi-play-fill"></i></div>
-                        <span className="text-[10px] font-bold opacity-80 truncate">
-                          {p.episode ? `Edisi ${p.episode} — ` : ""}{p.judul}
+                        <div className="keep-light-surface flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs">
+                          <i className="bi bi-play-fill" />
+                        </div>
+                        <span className="truncate text-[10px] font-bold text-white/80">
+                          {podcast.episode ? `Edisi ${podcast.episode} — ` : ""}
+                          {podcast.judul}
                         </span>
                       </button>
                     ))}
@@ -248,7 +276,7 @@ export default function MediaSection() {
                 <button
                   type="button"
                   onClick={() => setActivePlayer(featured)}
-                  className="block text-center w-full mt-8 py-3 bg-white text-primary rounded-xl font-bold text-xs hover:bg-slate-50 transition"
+                  className="keep-light-surface mt-8 block w-full rounded-xl py-3 text-center text-xs font-bold transition hover:brightness-95"
                 >
                   Dengarkan Semua
                 </button>

@@ -16,8 +16,17 @@ import MaklumatPelayanan from "./pages/MaklumatPelayanan";
 import PPIDPage from "./pages/PPIDPage";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 
+const COLOR_MODE_KEY = "diskominfo-color-mode";
+
+function getInitialDarkMode() {
+  const savedMode = localStorage.getItem(COLOR_MODE_KEY);
+  if (savedMode === "dark") return true;
+  if (savedMode === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 const AppContent = ({ dark, toggleDark }) => (
-  <div className="app-background antialiased min-h-screen flex flex-col font-sans transition-colors">
+  <div className="app-background min-h-screen flex flex-col font-sans antialiased transition-colors duration-300">
     <Navbar dark={dark} toggleDark={toggleDark} />
 
     <main className="flex-grow">
@@ -42,18 +51,17 @@ const AppContent = ({ dark, toggleDark }) => (
 );
 
 function App() {
-  const [dark, setDark] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved) return saved === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [dark, setDark] = useState(getInitialDarkMode);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
+    const root = document.documentElement;
+    root.classList.toggle("dark", dark);
+    root.dataset.colorMode = dark ? "dark" : "light";
+    root.style.colorScheme = dark ? "dark" : "light";
+    localStorage.setItem(COLOR_MODE_KEY, dark ? "dark" : "light");
   }, [dark]);
 
-  const toggleDark = () => setDark((prev) => !prev);
+  const toggleDark = () => setDark((current) => !current);
 
   return (
     <Router>

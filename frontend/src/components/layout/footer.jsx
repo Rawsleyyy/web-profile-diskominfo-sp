@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  MapPin,
-  Info,
-  ExternalLink,
-  Users,
   ChevronRight,
+  ExternalLink,
+  Info,
+  MapPin,
+  Users,
 } from "lucide-react";
 import { api } from "../../services/api";
 
@@ -77,18 +77,10 @@ export default function Footer() {
     "mb-5 flex items-center gap-2.5 text-xs font-black uppercase tracking-[0.18em] text-white";
 
   const linkClass =
-    "group flex items-center gap-2 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white";
+    "group flex items-center gap-2 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white";
 
   return (
-    <footer
-      className="relative mt-16 overflow-hidden border-t text-white"
-      style={{
-        background:
-          "linear-gradient(90deg, #1b2f5b 0%, #1f4e8c 45%, #2479b8 78%, #2ca8df 100%)",
-        borderTop: "1px solid rgba(255,255,255,0.10)",
-      }}
-      >   
-    
+    <footer className="theme-footer-surface relative mt-14 overflow-hidden border-t border-white/10 text-white">
       <style>
         {`
           @keyframes footerMarquee {
@@ -106,10 +98,12 @@ export default function Footer() {
         `}
       </style>
 
-      {/* Ornamen latar dibuat sangat tipis agar tidak mengganggu konten. */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-28 top-20 h-72 w-72 rounded-full bg-white/[0.035] blur-3xl" />
-        <div className="absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-cyan-300/[0.045] blur-3xl" />
+        <div
+          className="absolute -right-24 bottom-0 h-80 w-80 rounded-full blur-3xl"
+          style={{ background: "color-mix(in srgb, var(--theme-accent-raw) 8%, transparent)" }}
+        />
         <svg
           className="absolute bottom-10 left-[38%] h-44 w-44 text-white opacity-[0.025]"
           viewBox="0 0 100 100"
@@ -120,7 +114,6 @@ export default function Footer() {
         </svg>
       </div>
 
-      {/* Bar identitas mitra: tetap bergaya lama, tetapi tanpa kartu. */}
       <div className="relative border-b border-white/10 bg-black/10">
         <div className="overflow-hidden py-5">
           <div className="footer-marquee flex w-max items-center hover:[animation-play-state:paused]">
@@ -141,7 +134,7 @@ export default function Footer() {
                   <p className="truncate text-sm font-extrabold text-white md:text-base">
                     {organization.name}
                   </p>
-                  <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400 md:text-[11px]">
+                  <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-white/50 md:text-[11px]">
                     {organization.sub}
                   </p>
                 </div>
@@ -151,12 +144,11 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Hanya satu pembungkus utama. Kolom dipisahkan garis, bukan card. */}
       <div className="relative mx-auto max-w-7xl px-6 py-11 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
           <section className="lg:pr-8">
             <h4 className={headingClass}>
-              <MapPin size={16} className="text-cyan-300" />
+              <MapPin size={16} className="theme-footer-accent" />
               Lokasi
             </h4>
 
@@ -174,7 +166,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="mt-4 text-sm leading-6 text-slate-300">
+            <p className="mt-4 text-sm leading-6 text-white/[0.68]">
               Gedung Bale Upakari Lantai 3, Jl. Jenderal Sudirman No. 2,
               Kompleks Balaikota Surakarta 57133.
             </p>
@@ -182,7 +174,7 @@ export default function Footer() {
 
           <section className="lg:border-l lg:border-white/10 lg:px-8">
             <h4 className={headingClass}>
-              <Info size={16} className="text-cyan-300" />
+              <Info size={16} className="theme-footer-accent" />
               Informasi Publik
             </h4>
 
@@ -191,7 +183,7 @@ export default function Footer() {
                 <Link key={item.label} to={item.to} className={linkClass}>
                   <ChevronRight
                     size={14}
-                    className="shrink-0 text-cyan-300 transition-transform group-hover:translate-x-1"
+                    className="theme-footer-accent shrink-0 transition-transform group-hover:translate-x-1"
                   />
                   {item.label}
                 </Link>
@@ -201,7 +193,7 @@ export default function Footer() {
 
           <section className="lg:border-l lg:border-white/10 lg:px-8">
             <h4 className={headingClass}>
-              <ExternalLink size={16} className="text-cyan-300" />
+              <ExternalLink size={16} className="theme-footer-accent" />
               Link Terkait
             </h4>
 
@@ -216,7 +208,7 @@ export default function Footer() {
                 >
                   <ChevronRight
                     size={14}
-                    className="shrink-0 text-cyan-300 transition-transform group-hover:translate-x-1"
+                    className="theme-footer-accent shrink-0 transition-transform group-hover:translate-x-1"
                   />
                   {item.label}
                 </a>
@@ -226,7 +218,7 @@ export default function Footer() {
 
           <section className="lg:border-l lg:border-white/10 lg:pl-8">
             <h4 className={headingClass}>
-              <Users size={16} className="text-cyan-300" />
+              <Users size={16} className="theme-footer-accent" />
               Pengunjung
             </h4>
 
@@ -236,7 +228,7 @@ export default function Footer() {
                   key={stat.label}
                   className="flex items-center justify-between py-3 first:pt-0"
                 >
-                  <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-[0.12em] text-white/50">
                     {stat.label}
                   </span>
                   <span className="text-lg font-black tabular-nums text-white">
@@ -251,10 +243,10 @@ export default function Footer() {
 
       <div className="relative border-t border-white/10 bg-black/15">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center sm:flex-row sm:text-left lg:px-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/[0.48]">
             © 2026 Pemerintah Kota Surakarta. Hak cipta dilindungi undang-undang.
           </p>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/[0.42]">
             Dinas Komunikasi Informatika dan Persandian Kota Surakarta
           </p>
         </div>

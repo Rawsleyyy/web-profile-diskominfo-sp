@@ -22,50 +22,62 @@ export default function PrestasiSection() {
   }, []);
 
   return (
-    <section className="py-20 bg-accent-50/50">
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 bg-white text-accent-700 px-4 py-1.5 rounded-full mb-4 font-bold text-[10px] uppercase border border-accent-100 shadow-sm">
-          <span className="w-1.5 h-1.5 bg-accent-600 rounded-full animate-ping" /> Prestasi
+    <section className="theme-section-alt py-20">
+      <div className="mx-auto max-w-7xl px-6 text-center">
+        <div className="theme-chip mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase shadow-sm">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+          Prestasi
         </div>
-        <h2 className="text-4xl font-black text-slate-800 mb-16 tracking-tighter">Prestasi & Penghargaan</h2>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" aria-busy={loading}>
+        <h2 className="theme-text-main mb-14 text-4xl font-black tracking-tighter">
+          Prestasi & Penghargaan
+        </h2>
+
+        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4" aria-busy={loading}>
           {loading && Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-64 rounded-[2.5rem] bg-white/70 animate-pulse" />
+            <div
+              key={index}
+              className="theme-card h-64 animate-pulse rounded-[2.5rem]"
+            />
           ))}
 
           {!loading && prestasi.map((item) => (
-            <div key={item.id} className="bg-white p-8 rounded-[2.5rem] border border-accent-100 shadow-sm hover:-translate-y-2 transition-all flex flex-col items-center group">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mb-6 shadow-lg border border-gray-100">
+            <article
+              key={item.id}
+              className="theme-card group flex flex-col items-center rounded-[2.5rem] p-8 transition-all hover:-translate-y-2"
+            >
+              <div className="keep-light-surface mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border shadow-lg" style={{ borderColor: "var(--line-default)" }}>
                 {item.image ? (
                   <img
                     src={item.image}
                     alt={item.title || item.name || "Penghargaan"}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                    className="h-full w-full object-cover transition-transform group-hover:scale-110"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-full bg-blue-600 text-white flex items-center justify-center text-2xl">
+                  <div className="theme-action-gradient flex h-full w-full items-center justify-center text-2xl text-white">
                     <i className="bi bi-trophy" />
                   </div>
                 )}
               </div>
 
-              <h3 className="font-bold text-slate-800 mb-1 leading-tight text-sm md:text-base">
+              <h3 className="theme-text-main mb-1 text-sm font-bold leading-tight md:text-base">
                 {item.title || item.name}
               </h3>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-4 tracking-tighter line-clamp-3">
+              <p className="theme-text-secondary mb-4 line-clamp-3 text-[10px] font-bold uppercase tracking-tighter">
                 {item.description || "Penghargaan Diskominfo SP Kota Surakarta"}
               </p>
-              <span className="bg-accent-50 text-primary text-[10px] font-black px-4 py-1 rounded-full border border-accent-100">
+              <span className="theme-chip rounded-full px-4 py-1 text-[10px] font-black">
                 {item.year}
               </span>
-            </div>
+            </article>
           ))}
         </div>
 
         {!loading && prestasi.length === 0 && (
-          <p className="text-sm font-medium text-slate-500">Belum ada data penghargaan yang ditampilkan.</p>
+          <p className="theme-text-muted text-sm font-medium">
+            Belum ada data penghargaan yang ditampilkan.
+          </p>
         )}
       </div>
     </section>
