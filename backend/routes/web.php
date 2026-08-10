@@ -1,49 +1,37 @@
 <?php
 
 use App\Helpers\ActivityLogger;
+use App\Http\Controllers\SpaAuthController;
 use App\Livewire\Admin\Articles;
 use App\Livewire\Admin\Awards;
 use App\Livewire\Admin\DokumenPublikManager;
-use App\Livewire\Admin\HeroSlides;
+use App\Livewire\Admin\HomepageManager;
 use App\Livewire\Admin\Layanan;
+use App\Livewire\Admin\ModulesManager;
+use App\Livewire\Admin\NavigationManager;
+use App\Livewire\Admin\PagesManager;
 use App\Livewire\Admin\PodcastManager;
+use App\Livewire\Admin\SiteSettingsManager;
 use App\Livewire\Admin\SkmManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Halaman awal backend
-|--------------------------------------------------------------------------
-| Backend Laravel hanya digunakan untuk autentikasi dan dashboard admin.
-*/
-Route::get('/', function () {
-    return Auth::check()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('admin.login');
-})->name('home');
-
-/*
-|--------------------------------------------------------------------------
-| Alias login
-|--------------------------------------------------------------------------
-| /login otomatis mengarah ke /admin/login.
-*/
-Route::redirect('/login', '/admin/login')->name('login');
-
-/*
-|--------------------------------------------------------------------------
-| Login admin
-|--------------------------------------------------------------------------
-*/
-Route::view('/admin/login', 'admin.login')
-    ->middleware('guest')
-    ->name('admin.login');
+Route::view('/', 'welcome')->name('home');
+Route::view('/admin/login', 'admin.login')->middleware('guest')->name('admin.login');
+Route::post('/auth/login', [SpaAuthController::class, 'login'])->middleware('throttle:5,1')->name('auth.login');
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+
+    // Website Builder: konfigurasi lintas-instansi.
+    Route::get('/site-settings', SiteSettingsManager::class)->name('site-settings');
     Route::view('/theme-settings', 'admin.theme-settings')->name('theme-settings');
-    Route::get('/header', HeroSlides::class)->name('header');
+    Route::get('/modules', ModulesManager::class)->name('modules');
+    Route::get('/pages', PagesManager::class)->name('pages');
+    Route::get('/navigation', NavigationManager::class)->name('navigation');
+    Route::get('/homepage', HomepageManager::class)->name('homepage');
+
+    // Modul konten yang sudah tersedia.
     Route::view('/berita', 'admin.berita')->name('berita');
     Route::view('/pejabat', 'admin.pejabat')->name('pejabat');
     Route::get('/podcast', PodcastManager::class)->name('podcast');

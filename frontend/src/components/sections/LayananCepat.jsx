@@ -69,7 +69,7 @@ export default function LayananCepat() {
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary-900 dark:text-white tracking-tight uppercase">Layanan Cepat</h2>
           <p className="text-slate-500 dark:text-white/50 font-medium text-sm mt-3 max-w-lg mx-auto leading-relaxed">
-            Akses kanal layanan publik Pemerintah Kota Surakarta secara terintegrasi.
+            Akses kanal layanan publik instansi secara terintegrasi.
           </p>
           {usingFallback && <p className="sr-only">Data cadangan ditampilkan karena layanan API belum tersedia.</p>}
         </div>

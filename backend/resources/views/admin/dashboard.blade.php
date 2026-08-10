@@ -5,7 +5,7 @@
                 Dashboard {{ auth()->user()->role->name ?? 'Admin' }}
             </h1>
             <p class="mt-1 text-gray-500 dark:text-gray-400">
-                Selamat datang di sistem pengelolaan Web Profile Diskominfo SP Kota Surakarta.
+                Selamat datang di sistem pengelolaan website instansi. Gunakan menu Website Builder untuk mengatur identitas, modul, navbar, halaman, dan beranda.
             </p>
         </div>
 

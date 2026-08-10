@@ -1,256 +1,56 @@
 import { useEffect, useState } from "react";
+import { ExternalLink, Mail, MapPin, Phone, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
-  ChevronRight,
-  ExternalLink,
-  Info,
-  MapPin,
-  Users,
-} from "lucide-react";
 import { api } from "../../services/api";
-
-import logoPPID from "../../assets/footer/logo-ppid.png";
-import logoSoloData from "../../assets/footer/logo-solodata.png";
-import logoPemkot from "../../assets/footer/logo-pemkot.png";
+import { useSiteConfig } from "../../context/siteconfigcontext";
 
 export default function Footer() {
+  const { settings, navigation } = useSiteConfig();
   const [visitorStats, setVisitorStats] = useState([
-    { label: "Hari Ini", value: "..." },
-    { label: "Kemarin", value: "..." },
-    { label: "Bulan Ini", value: "..." },
-    { label: "Total", value: "..." },
+    { label: "Hari Ini", value: "..." }, { label: "Kemarin", value: "..." }, { label: "Bulan Ini", value: "..." }, { label: "Total", value: "..." },
   ]);
 
   useEffect(() => {
-    api
-      .get("/visitor-stats")
-      .then((response) => {
-        if (!response.data) return;
-
-        setVisitorStats([
-          { label: "Hari Ini", value: response.data.hari_ini ?? 0 },
-          { label: "Kemarin", value: response.data.kemarin ?? 0 },
-          { label: "Bulan Ini", value: response.data.bulan_ini ?? 0 },
-          { label: "Total", value: response.data.total ?? 0 },
-        ]);
-      })
-      .catch((error) => {
-        console.error("Gagal mengambil data statistik:", error);
-      });
+    api.get("/visitor-stats").then(({ data }) => setVisitorStats([
+      { label: "Hari Ini", value: data.hari_ini }, { label: "Kemarin", value: data.kemarin }, { label: "Bulan Ini", value: data.bulan_ini }, { label: "Total", value: data.total },
+    ])).catch(() => {});
   }, []);
 
-  const organizations = [
-    {
-      name: "PPID Kota Surakarta",
-      sub: "Pejabat Pengelola Informasi dan Dokumentasi",
-      img: logoPPID,
-    },
-    {
-      name: "SoloData",
-      sub: "Portal Data Terbuka",
-      img: logoSoloData,
-    },
-    {
-      name: "Pemerintah Kota Surakarta",
-      sub: "Kota Bengawan",
-      img: logoPemkot,
-    },
-  ];
-
-  const marqueeItems = [...organizations, ...organizations];
-
-  const publicInformation = [
-    { label: "Informasi Berkala", to: "/ppid" },
-    { label: "Informasi Setiap Saat", to: "/ppid" },
-    { label: "Informasi Serta Merta", to: "/ppid" },
-    { label: "Informasi Dikecualikan", to: "/ppid" },
-  ];
-
-  const relatedLinks = [
-    { label: "Pemerintah Kota Surakarta", href: "https://surakarta.go.id" },
-    { label: "PPID Kota Surakarta", href: "https://ppid.surakarta.go.id" },
-    { label: "Solo Data", href: "https://data.surakarta.go.id" },
-    { label: "Kominfo RI", href: "https://kominfo.go.id" },
-  ];
-
-  const headingClass =
-    "mb-5 flex items-center gap-2.5 text-xs font-black uppercase tracking-[0.18em] text-white";
-
-  const linkClass =
-    "group flex items-center gap-2 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white";
+  const rootLinks = (navigation || []).filter((item) => item.url && item.url !== "#").slice(0, 6);
 
   return (
-    <footer className="theme-footer-surface relative mt-14 overflow-hidden border-t border-white/10 text-white">
-      <style>
-        {`
-          @keyframes footerMarquee {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-          }
+    <footer className="relative mt-10 overflow-hidden border-t border-white/10 text-white" style={{ background: "var(--color-primary-900)" }}>
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-4">
+        <div className="md:col-span-2">
+          <h3 className="text-xl font-black">{settings?.site_name}</h3>
+          {settings?.site_description && <p className="mt-3 max-w-xl text-sm leading-7 text-white/65">{settings.site_description}</p>}
+          <div className="mt-5 space-y-2 text-sm text-white/65">
+            {settings?.address && <p className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0" />{settings.address}</p>}
+            {settings?.phone && <a className="flex gap-2 hover:text-white" href={`tel:${settings.phone}`}><Phone size={16} />{settings.phone}</a>}
+            {settings?.email && <a className="flex gap-2 hover:text-white" href={`mailto:${settings.email}`}><Mail size={16} />{settings.email}</a>}
+          </div>
+        </div>
 
-          .footer-marquee {
-            animation: footerMarquee 26s linear infinite;
-          }
+        <div>
+          <h4 className="mb-4 text-xs font-black uppercase tracking-widest text-accent-300">Navigasi</h4>
+          <div className="space-y-2">
+            {rootLinks.map((item) => /^https?:\/\//i.test(item.url)
+              ? <a key={item.id ?? item.label} href={item.url} target="_blank" rel="noreferrer" className="block text-sm text-white/65 hover:text-white">{item.label}</a>
+              : <Link key={item.id ?? item.label} to={item.url} className="block text-sm text-white/65 hover:text-white">{item.label}</Link>)}
+          </div>
+        </div>
 
-          @media (prefers-reduced-motion: reduce) {
-            .footer-marquee { animation: none; }
-          }
-        `}
-      </style>
-
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-28 top-20 h-72 w-72 rounded-full bg-white/[0.035] blur-3xl" />
-        <div
-          className="absolute -right-24 bottom-0 h-80 w-80 rounded-full blur-3xl"
-          style={{ background: "color-mix(in srgb, var(--theme-accent-raw) 8%, transparent)" }}
-        />
-        <svg
-          className="absolute bottom-10 left-[38%] h-44 w-44 text-white opacity-[0.025]"
-          viewBox="0 0 100 100"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M50 0C60 30 80 40 100 50C80 60 60 70 50 100C40 70 20 60 0 50C20 40 40 30 50 0Z" />
-        </svg>
-      </div>
-
-      <div className="relative border-b border-white/10 bg-black/10">
-        <div className="overflow-hidden py-5">
-          <div className="footer-marquee flex w-max items-center hover:[animation-play-state:paused]">
-            {marqueeItems.map((organization, index) => (
-              <div
-                key={`${organization.name}-${index}`}
-                className="flex min-w-[330px] shrink-0 items-center gap-4 px-8 md:min-w-[390px] md:px-12"
-              >
-                <img
-                  src={organization.img}
-                  alt={organization.name}
-                  className="h-11 w-auto max-w-[120px] object-contain md:h-13"
-                />
-
-                <div className="h-9 w-px bg-white/15" />
-
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-extrabold text-white md:text-base">
-                    {organization.name}
-                  </p>
-                  <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-white/50 md:text-[11px]">
-                    {organization.sub}
-                  </p>
-                </div>
-              </div>
-            ))}
+        <div>
+          <h4 className="mb-4 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-accent-300"><Users size={14} /> Pengunjung</h4>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            {visitorStats.map((stat) => <div key={stat.label} className="flex justify-between border-b border-white/10 py-2 text-xs last:border-0"><span className="text-white/60">{stat.label}</span><strong>{stat.value}</strong></div>)}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {Object.entries(settings?.socials || {}).filter(([, url]) => url).map(([name, url]) => <a key={name} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold uppercase text-white/60 hover:text-white">{name}<ExternalLink size={11}/></a>)}
           </div>
         </div>
       </div>
-
-      <div className="relative mx-auto max-w-7xl px-6 py-11 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
-          <section className="lg:pr-8">
-            <h4 className={headingClass}>
-              <MapPin size={16} className="theme-footer-accent" />
-              Lokasi
-            </h4>
-
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-              <div className="aspect-[16/10]">
-                <iframe
-                  title="Lokasi Diskominfo SP"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.123!2d110.8265!3d-7.5558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a168636a0d0d1%3A0x6b1f2382e2136e05!2sBalaikota%20Surakarta!5e0!3m2!1sen!2sid!4v1700000000000"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  className="h-full w-full opacity-85 grayscale-[20%] transition duration-500 hover:opacity-100 hover:grayscale-0"
-                />
-              </div>
-            </div>
-
-            <p className="mt-4 text-sm leading-6 text-white/[0.68]">
-              Gedung Bale Upakari Lantai 3, Jl. Jenderal Sudirman No. 2,
-              Kompleks Balaikota Surakarta 57133.
-            </p>
-          </section>
-
-          <section className="lg:border-l lg:border-white/10 lg:px-8">
-            <h4 className={headingClass}>
-              <Info size={16} className="theme-footer-accent" />
-              Informasi Publik
-            </h4>
-
-            <nav className="divide-y divide-white/[0.07]">
-              {publicInformation.map((item) => (
-                <Link key={item.label} to={item.to} className={linkClass}>
-                  <ChevronRight
-                    size={14}
-                    className="theme-footer-accent shrink-0 transition-transform group-hover:translate-x-1"
-                  />
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </section>
-
-          <section className="lg:border-l lg:border-white/10 lg:px-8">
-            <h4 className={headingClass}>
-              <ExternalLink size={16} className="theme-footer-accent" />
-              Link Terkait
-            </h4>
-
-            <nav className="divide-y divide-white/[0.07]">
-              {relatedLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={linkClass}
-                >
-                  <ChevronRight
-                    size={14}
-                    className="theme-footer-accent shrink-0 transition-transform group-hover:translate-x-1"
-                  />
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          </section>
-
-          <section className="lg:border-l lg:border-white/10 lg:pl-8">
-            <h4 className={headingClass}>
-              <Users size={16} className="theme-footer-accent" />
-              Pengunjung
-            </h4>
-
-            <div className="divide-y divide-white/[0.08]">
-              {visitorStats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex items-center justify-between py-3 first:pt-0"
-                >
-                  <span className="text-xs font-bold uppercase tracking-[0.12em] text-white/50">
-                    {stat.label}
-                  </span>
-                  <span className="text-lg font-black tabular-nums text-white">
-                    {stat.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <div className="relative border-t border-white/10 bg-black/15">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center sm:flex-row sm:text-left lg:px-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/[0.48]">
-            © 2026 Pemerintah Kota Surakarta. Hak cipta dilindungi undang-undang.
-          </p>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/[0.42]">
-            Dinas Komunikasi Informatika dan Persandian Kota Surakarta
-          </p>
-        </div>
-      </div>
+      <div className="border-t border-white/10 px-6 py-4 text-center text-[11px] font-semibold text-white/45">© {new Date().getFullYear()} — {settings?.footer_text || settings?.site_name}</div>
     </footer>
   );
 }

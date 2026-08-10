@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    // Halaman login admin dirender langsung oleh Laravel.
+    // Login administrator ditangani oleh Laravel.
     'admin_login_url' => env(
         'ADMIN_LOGIN_URL',
         rtrim((string) env('APP_URL', 'http://localhost'), '/').'/admin/login'
@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     /*
     |--------------------------------------------------------------------------

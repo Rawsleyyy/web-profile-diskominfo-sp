@@ -58,7 +58,7 @@ export default function StructureSection() {
         <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px]">Kelembagaan</span>
         <h1 className="text-4xl font-black text-slate-800 tracking-tighter mt-4">Struktur Organisasi</h1>
         <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-          Susunan pimpinan dan pejabat di lingkungan Dinas Komunikasi, Informatika, Statistik, dan Persandian Kota Surakarta.
+          Susunan pimpinan dan pejabat di lingkungan instansi.
         </p>
       </div>
 
