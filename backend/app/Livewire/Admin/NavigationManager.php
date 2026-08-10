@@ -37,6 +37,7 @@ class NavigationManager extends Component
     public function edit(int $id): void
     {
         $item = MenuItem::findOrFail($id);
+
         $this->editingId = $item->id;
         $this->label = $item->label;
         $this->type = $item->type;
@@ -50,6 +51,26 @@ class NavigationManager extends Component
         $this->visible_from = optional($item->visible_from)->format('Y-m-d\TH:i');
         $this->visible_until = optional($item->visible_until)->format('Y-m-d\TH:i');
         $this->showForm = true;
+    }
+
+    public function updatedType(string $value): void
+    {
+        if (! in_array($value, ['route', 'external'], true)) {
+            $this->url = '';
+        }
+        if ($value !== 'module') {
+            $this->module_slug = '';
+        }
+        if ($value !== 'page') {
+            $this->page_id = '';
+        }
+        if ($value === 'external') {
+            $this->target = '_blank';
+        }
+        if ($value === 'dropdown') {
+            $this->target = '_self';
+        }
+        $this->resetValidation();
     }
 
     public function save(): void
@@ -74,13 +95,15 @@ class NavigationManager extends Component
         }
 
         if (in_array($validated['type'], ['route', 'external'], true) && blank($validated['url'])) {
-            $this->addError('url', 'URL wajib diisi untuk tipe ini.');
+            $this->addError('url', 'URL wajib diisi untuk jenis menu ini.');
             return;
         }
+
         if ($validated['type'] === 'module' && blank($validated['module_slug'])) {
             $this->addError('module_slug', 'Pilih modul yang akan dituju.');
             return;
         }
+
         if ($validated['type'] === 'page' && blank($validated['page_id'])) {
             $this->addError('page_id', 'Pilih halaman yang akan dituju.');
             return;
@@ -113,7 +136,14 @@ class NavigationManager extends Component
     {
         $item = MenuItem::findOrFail($id);
         $item->update(['is_active' => ! $item->is_active]);
-        ActivityLogger::log('Navbar', 'UPDATE', 'success', auth()->id(), $item->label.' '.($item->is_active ? 'Aktif' : 'Nonaktif'));
+
+        ActivityLogger::log(
+            'Navbar',
+            'UPDATE',
+            'success',
+            auth()->id(),
+            $item->label.' '.($item->is_active ? 'Aktif' : 'Nonaktif')
+        );
     }
 
     public function delete(int $id): void
@@ -121,6 +151,7 @@ class NavigationManager extends Component
         $item = MenuItem::findOrFail($id);
         $label = $item->label;
         $item->delete();
+
         ActivityLogger::log('Navbar', 'DELETE', 'success', auth()->id(), $label);
         session()->flash('navigation-message', 'Menu navbar berhasil dihapus.');
     }
@@ -132,7 +163,18 @@ class NavigationManager extends Component
 
     private function resetForm(): void
     {
-        $this->reset(['editingId', 'label', 'url', 'module_slug', 'page_id', 'parent_id', 'visible_from', 'visible_until', 'showForm']);
+        $this->reset([
+            'editingId',
+            'label',
+            'url',
+            'module_slug',
+            'page_id',
+            'parent_id',
+            'visible_from',
+            'visible_until',
+            'showForm',
+        ]);
+
         $this->type = 'route';
         $this->sort_order = 10;
         $this->target = '_self';
@@ -143,8 +185,17 @@ class NavigationManager extends Component
     public function render()
     {
         return view('livewire.admin.navigation-manager', [
-            'rootItems' => MenuItem::query()->with('children')->whereNull('parent_id')->orderBy('sort_order')->orderBy('id')->get(),
-            'parentOptions' => MenuItem::query()->whereNull('parent_id')->when($this->editingId, fn ($q) => $q->where('id', '!=', $this->editingId))->orderBy('sort_order')->get(),
+            'rootItems' => MenuItem::query()
+                ->with('children')
+                ->whereNull('parent_id')
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get(),
+            'parentOptions' => MenuItem::query()
+                ->whereNull('parent_id')
+                ->when($this->editingId, fn ($query) => $query->where('id', '!=', $this->editingId))
+                ->orderBy('sort_order')
+                ->get(),
             'modules' => SiteModule::query()->orderBy('sort_order')->get(),
             'pages' => CustomPage::query()->orderBy('title')->get(),
         ]);

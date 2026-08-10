@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomPage;
 use App\Models\HomepageSection;
-use App\Models\MenuItem;
 use App\Models\SiteModule;
 use App\Models\SiteSetting;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class SiteConfigController extends Controller
@@ -18,18 +19,33 @@ class SiteConfigController extends Controller
         $modules = SiteModule::query()->orderBy('sort_order')->get();
         $enabledMap = $modules->pluck('is_enabled', 'slug')->map(fn ($value) => (bool) $value);
 
-        $homepageSections = HomepageSection::query()
+        $sections = HomepageSection::query()
             ->where('is_enabled', true)
             ->orderBy('sort_order')
             ->get()
             ->filter(fn (HomepageSection $section) => ! $section->module_slug || ($enabledMap[$section->module_slug] ?? false))
-            ->values()
-            ->map(fn (HomepageSection $section) => [
-                'key' => $section->section_key,
-                'label' => $section->label,
-                'module_slug' => $section->module_slug,
-                'sort_order' => $section->sort_order,
-            ]);
+            ->values();
+
+        $pageIds = $sections
+            ->where('section_type', HomepageSection::TYPE_PAGE_HIGHLIGHT)
+            ->pluck('source_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $pageMap = CustomPage::query()
+            ->whereIn('id', $pageIds)
+            ->where('is_published', true)
+            ->where(function ($query) {
+                $query->whereNull('published_at')->orWhere('published_at', '<=', now());
+            })
+            ->get()
+            ->keyBy('id');
+
+        $homepageSections = $sections
+            ->map(fn (HomepageSection $section) => $this->homepageSectionPayload($section, $pageMap))
+            ->filter()
+            ->values();
 
         $navigationPayload = $navigationController->index()->getData(true)['data'] ?? [];
 
@@ -48,6 +64,54 @@ class SiteConfigController extends Controller
         ]);
     }
 
+    private function homepageSectionPayload(HomepageSection $section, Collection $pageMap): ?array
+    {
+        $settings = $section->settings ?? [];
+
+        if ($section->section_type === HomepageSection::TYPE_PAGE_HIGHLIGHT) {
+            $page = $pageMap->get($section->source_id);
+
+            if (! $page) {
+                return null;
+            }
+
+            return [
+                'key' => $section->section_key,
+                'type' => HomepageSection::TYPE_PAGE_HIGHLIGHT,
+                'label' => $section->label,
+                'layout' => $section->layout,
+                'sort_order' => $section->sort_order,
+                'settings' => [
+                    'title' => ($settings['title'] ?? null) ?: $page->title,
+                    'subtitle' => ($settings['subtitle'] ?? null) ?: $page->excerpt,
+                    'button_text' => ($settings['button_text'] ?? null) ?: 'Lihat Selengkapnya',
+                ],
+                'page' => [
+                    'id' => $page->id,
+                    'title' => $page->title,
+                    'slug' => $page->slug,
+                    'excerpt' => $page->excerpt,
+                    'banner_url' => $page->banner_path ? url(Storage::url($page->banner_path)) : null,
+                    'url' => '/page/'.$page->slug,
+                ],
+            ];
+        }
+
+        if ($section->section_type === HomepageSection::TYPE_CUSTOM_CONTENT && ! empty($settings['image_path'])) {
+            $settings['image_url'] = url(Storage::url($settings['image_path']));
+        }
+
+        return [
+            'key' => $section->section_key,
+            'type' => $section->section_type ?: HomepageSection::TYPE_BUILTIN,
+            'label' => $section->label,
+            'module_slug' => $section->module_slug,
+            'layout' => $section->layout ?: 'default',
+            'sort_order' => $section->sort_order,
+            'settings' => $settings,
+        ];
+    }
+
     private function settingsPayload(?SiteSetting $settings): array
     {
         if (! $settings) {
@@ -62,7 +126,6 @@ class SiteConfigController extends Controller
                 'address' => null,
                 'socials' => [],
                 'footer_text' => null,
-                'announcement' => null,
             ];
         }
 
@@ -82,11 +145,6 @@ class SiteConfigController extends Controller
                 'tiktok' => $settings->tiktok_url,
             ],
             'footer_text' => $settings->footer_text,
-            'announcement' => $settings->announcementIsVisible() ? [
-                'text' => $settings->announcement_text,
-                'url' => $settings->announcement_url,
-                'color' => $settings->announcement_color,
-            ] : null,
         ];
     }
 }

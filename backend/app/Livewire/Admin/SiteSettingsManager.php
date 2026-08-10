@@ -30,25 +30,23 @@ class SiteSettingsManager extends Component
     public $favicon = null;
     public ?string $existingLogo = null;
     public ?string $existingFavicon = null;
-    public bool $announcement_enabled = false;
-    public string $announcement_text = '';
-    public string $announcement_url = '';
-    public string $announcement_color = '#DC2626';
-    public ?string $announcement_from = null;
-    public ?string $announcement_until = null;
 
     public function mount(): void
     {
         $setting = SiteSetting::query()->first();
-        if (! $setting) return;
+        if (! $setting) {
+            return;
+        }
 
         $this->settingId = $setting->id;
-        foreach (['site_name','site_short_name','site_description','phone','email','address','instagram_url','facebook_url','youtube_url','tiktok_url','footer_text','announcement_text','announcement_url','announcement_color'] as $field) {
+
+        foreach ([
+            'site_name', 'site_short_name', 'site_description', 'phone', 'email', 'address',
+            'instagram_url', 'facebook_url', 'youtube_url', 'tiktok_url', 'footer_text',
+        ] as $field) {
             $this->{$field} = (string) ($setting->{$field} ?? '');
         }
-        $this->announcement_enabled = $setting->announcement_enabled;
-        $this->announcement_from = optional($setting->announcement_from)->format('Y-m-d\TH:i');
-        $this->announcement_until = optional($setting->announcement_until)->format('Y-m-d\TH:i');
+
         $this->existingLogo = $setting->logo_path;
         $this->existingFavicon = $setting->favicon_path;
     }
@@ -69,12 +67,6 @@ class SiteSettingsManager extends Component
             'footer_text' => ['nullable', 'string', 'max:1000'],
             'logo' => ['nullable', 'image', 'max:3072'],
             'favicon' => ['nullable', 'image', 'max:1024'],
-            'announcement_enabled' => ['boolean'],
-            'announcement_text' => ['nullable', 'string', 'max:255'],
-            'announcement_url' => ['nullable', 'string', 'max:1000'],
-            'announcement_color' => ['required', 'regex:/^#[A-Fa-f0-9]{6}$/'],
-            'announcement_from' => ['nullable', 'date'],
-            'announcement_until' => ['nullable', 'date', 'after_or_equal:announcement_from'],
         ]);
 
         $setting = SiteSetting::firstOrNew(['id' => $this->settingId]);
@@ -82,25 +74,29 @@ class SiteSettingsManager extends Component
         $faviconPath = $setting->favicon_path;
 
         if ($this->logo) {
-            if ($logoPath) Storage::disk('public')->delete($logoPath);
+            if ($logoPath) {
+                Storage::disk('public')->delete($logoPath);
+            }
             $logoPath = $this->logo->store('site', 'public');
         }
+
         if ($this->favicon) {
-            if ($faviconPath) Storage::disk('public')->delete($faviconPath);
+            if ($faviconPath) {
+                Storage::disk('public')->delete($faviconPath);
+            }
             $faviconPath = $this->favicon->store('site', 'public');
         }
 
         $payload = $validated;
         unset($payload['logo'], $payload['favicon']);
+
         $setting->fill(array_merge($payload, [
             'logo_path' => $logoPath,
             'favicon_path' => $faviconPath,
-            'announcement_color' => strtoupper($validated['announcement_color']),
-            'announcement_from' => $validated['announcement_from'] ?: null,
-            'announcement_until' => $validated['announcement_until'] ?: null,
             'updated_by' => auth()->id(),
         ]));
         $setting->save();
+
         $this->settingId = $setting->id;
         $this->existingLogo = $logoPath;
         $this->existingFavicon = $faviconPath;
@@ -108,7 +104,7 @@ class SiteSettingsManager extends Component
         $this->favicon = null;
 
         ActivityLogger::log('Site Settings', 'UPDATE', 'success', auth()->id(), $setting->site_name);
-        session()->flash('site-settings-message', 'Identitas dan pengaturan website berhasil disimpan.');
+        session()->flash('site-settings-message', 'Identitas website berhasil disimpan.');
     }
 
     public function render()

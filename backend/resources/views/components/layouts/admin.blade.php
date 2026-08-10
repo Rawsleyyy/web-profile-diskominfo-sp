@@ -7,8 +7,9 @@
     <meta name="admin-session-expires-at" content="{{ (int) session('admin_session_expires_at', 0) }}">
     <meta name="server-now" content="{{ now()->timestamp }}">
 
-    <title>{{ $title ?? 'Dashboard Admin Diskominfo SP Surakarta' }}</title>
+    <title>{{ $title ?? 'Dashboard Admin' }}</title>
 
+    @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -25,6 +26,7 @@
         @include('partials.dashboard.footer')
     </div>
 
+    @livewireScripts
 
     <script>
         (() => {
@@ -38,7 +40,6 @@
 
             if (!expiresAt || !serverNow) return;
 
-            // Menggunakan selisih waktu dari server agar tidak bergantung pada timezone browser.
             const deadline = Date.now() + Math.max(0, expiresAt - serverNow) * 1000;
             let logoutStarted = false;
 
@@ -92,6 +93,5 @@
             document.addEventListener('visibilitychange', tick);
         })();
     </script>
-
 </body>
 </html>
