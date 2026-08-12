@@ -20,9 +20,8 @@ export default function Footer() {
 
   return (
     <footer className="relative mt-10 overflow-hidden border-t border-white/10 text-white" style={{ background: "var(--color-primary-900)" }}>
-      <div className="site-container grid gap-10 py-12 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          {settings?.logo_footer_url && <img src={settings.logo_footer_url} alt={settings?.site_name || "Logo"} className="mb-4 h-12 max-w-60 object-contain" />}
           <h3 className="text-xl font-black">{settings?.site_name}</h3>
           {settings?.site_description && <p className="mt-3 max-w-xl text-sm leading-7 text-white/65">{settings.site_description}</p>}
           <div className="mt-5 space-y-2 text-sm text-white/65">

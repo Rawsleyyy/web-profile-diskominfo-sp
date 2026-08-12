@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\PreviewTokenService;
-use App\Services\PublishedSiteConfig;
+use App\Models\SiteModule;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ModuleController extends Controller
 {
-    public function index(Request $request, PublishedSiteConfig $config): JsonResponse
+    public function index(): JsonResponse
     {
-        $draft = PreviewTokenService::valid($request->query('preview_token'));
-        return response()->json(['data' => $config->payload($draft)['modules'] ?? []]);
+        return response()->json([
+            'data' => SiteModule::query()
+                ->orderBy('sort_order')
+                ->get(['name', 'slug', 'public_route', 'is_enabled']),
+        ]);
     }
 }

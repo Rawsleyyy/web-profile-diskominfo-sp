@@ -74,6 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
     Route::put('/theme', [ThemeSettingController::class, 'update']);
 
-    Route::get('/logs', [LogActivityController::class, 'index'])->middleware('permission:logs.view');
-    Route::apiResource('users', UserController::class)->except(['show'])->middleware('permission:users.manage');
+    Route::middleware('role:Super Admin')->group(function () {
+        Route::get('/logs', [LogActivityController::class, 'index']);
+        Route::apiResource('users', UserController::class)->except(['show']);
+    });
 });
