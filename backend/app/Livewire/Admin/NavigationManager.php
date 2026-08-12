@@ -156,6 +156,22 @@ class NavigationManager extends Component
         session()->flash('navigation-message', 'Menu navbar berhasil dihapus.');
     }
 
+    public function moveBefore(int $draggedId, int $targetId): void
+    {
+        if ($draggedId === $targetId) return;
+        $dragged = MenuItem::findOrFail($draggedId);
+        $target = MenuItem::findOrFail($targetId);
+        if ((int) $dragged->parent_id !== (int) $target->parent_id) {
+            session()->flash('navigation-message', 'Drag hanya dapat dilakukan pada level menu yang sama.');
+            return;
+        }
+        $items = MenuItem::query()->where('parent_id', $dragged->parent_id)->orderBy('sort_order')->orderBy('id')->get()->reject(fn ($item) => $item->id === $dragged->id)->values();
+        $targetIndex = $items->search(fn ($item) => $item->id === $target->id);
+        $items->splice($targetIndex === false ? $items->count() : $targetIndex, 0, [$dragged]);
+        foreach ($items as $index => $item) $item->update(['sort_order' => ($index + 1) * 10]);
+        ActivityLogger::log('Navbar', 'REORDER', 'success', auth()->id(), $dragged->label);
+    }
+
     public function cancel(): void
     {
         $this->resetForm();

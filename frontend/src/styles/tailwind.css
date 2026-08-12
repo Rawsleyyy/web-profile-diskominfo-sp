@@ -2,481 +2,91 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --theme-primary-raw: #1e3a8a;
-  --theme-accent-raw: #dc2626;
-  --theme-on-light: #1e3a8a;
-  --theme-accent-on-light: #b91c1c;
-  --theme-on-dark: #93c5fd;
-  --theme-accent-on-dark: #fca5a5;
-  --theme-soft-light: #eef4ff;
-  --theme-soft-dark: #142033;
-  --theme-border-light: #cfdcf2;
-  --theme-border-dark: #2a3952;
-  --theme-navbar-gradient: linear-gradient(105deg, #142b55 0%, #1f4f8d 52%, #2186b5 100%);
-  --theme-footer-gradient: linear-gradient(118deg, #071426 0%, #061120 100%);
-  --theme-panel-gradient: linear-gradient(135deg, #1f4f8d 0%, #2186b5 100%);
-  --theme-hero-gradient: linear-gradient(90deg, rgba(14 38 73 / 0.94) 0%, rgba(15 37 66 / 0.72) 48%, rgba(15 37 66 / 0.08) 100%);
-  --theme-navbar-top: #071426;
-  --theme-navbar-accent: #fca5a5;
-  --theme-footer-accent: #fca5a5;
-  --theme-focus: #1e3a8a;
+@layer components {
+  .form-input-skm {
+    @apply w-full p-3 rounded-xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-accent focus:ring-0 outline-none transition-all font-medium text-slate-700;
+  }
 
-  --page-bg: #f3f7fc;
-  --surface-section: rgba(248, 250, 252, 0.78);
-  --surface-card: rgba(255, 255, 255, 0.94);
-  --surface-card-solid: #ffffff;
-  --surface-muted: #f1f5f9;
-  --surface-elevated: #ffffff;
-  --text-main: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --line-default: rgba(15, 23, 42, 0.1);
-  --line-strong: rgba(15, 23, 42, 0.16);
-  --shadow-soft: 0 14px 38px rgba(15, 23, 42, 0.08);
-  --chart-empty: #cbd5e1;
-}
+  /* Background aplikasi: mesh gradient primary + accent, kesan modern/digital.
+     Dipasang sekali di root layout (App.jsx). */
+  .app-background {
+    background-color: #f0f5fb;
+    background-image:
+      radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 16%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 40%),
+      radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 40%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 
-.dark {
-  --page-bg: #050914;
-  --surface-section: rgba(7, 15, 29, 0.82);
-  --surface-card: rgba(14, 24, 41, 0.92);
-  --surface-card-solid: #0e1829;
-  --surface-muted: #111e31;
-  --surface-elevated: #152238;
-  --text-main: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #8fa1b8;
-  --line-default: rgba(148, 163, 184, 0.16);
-  --line-strong: rgba(148, 163, 184, 0.24);
-  --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.28);
-  --chart-empty: #475569;
+  .dark .app-background {
+    background-color: #0f172a;
+    background-image:
+      radial-gradient(circle at 8% 8%, color-mix(in srgb, var(--color-accent) 14%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 40%),
+      radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 95% 95%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 40%);
+  }
 }
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", sans-serif;
 
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
   --color-primary-300: #93c5fd;
   --color-primary-400: #60a5fa;
-  --color-primary-500: #1e3a8a;
+  --color-primary-500: #1E3A8A;
   --color-primary-600: #1e40af;
   --color-primary-700: #1e3a8a;
   --color-primary-800: #172554;
   --color-primary-900: #0f172a;
-  --color-primary: #1e3a8a;
+  --color-primary: #1E3A8A;
 
   --color-accent-50: #fef2f2;
   --color-accent-100: #fee2e2;
   --color-accent-200: #fecaca;
   --color-accent-300: #fca5a5;
   --color-accent-400: #f87171;
-  --color-accent-500: #dc2626;
+  --color-accent-500: #DC2626;
   --color-accent-600: #b91c1c;
   --color-accent-700: #991b1b;
   --color-accent-800: #7f1d1d;
   --color-accent-900: #450a0a;
-  --color-accent: #dc2626;
+  --color-accent: #DC2626;
 
   --font-size-hero: clamp(2rem, 1rem + 5vw, 4.5rem);
 }
 
 @layer base {
-  html {
-    min-height: 100%;
-    background: var(--page-bg);
-    scroll-behavior: smooth;
-  }
-
   body {
-    min-width: 320px;
-    min-height: 100vh;
-    margin: 0;
-    background: var(--page-bg);
-    color: var(--text-main);
     font-family: var(--font-sans);
-    letter-spacing: -0.01em;
-    @apply antialiased;
+    letter-spacing: -0.01em; /* Meningkatkan kemewahan visual */
+    @apply antialiased text-slate-900 dark:text-white;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: inherit;
+  h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.025em; /* Lebih rapat untuk heading agar tegas */
     @apply font-extrabold;
   }
-
-  input,
-  select,
-  textarea {
-    color: var(--text-main);
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--text-muted);
-  }
-
-  option {
-    background: var(--surface-card-solid);
-    color: var(--text-main);
-  }
-
-  ::selection {
-    background: color-mix(in srgb, var(--theme-primary-raw) 30%, transparent);
-  }
 }
-
+/* V3 Theme Builder variables */
+@layer base {
+  body { background: var(--site-background, #F8FAFC); color: var(--site-text-primary, #0F172A); font-family: var(--site-font-body, "Inter"), sans-serif; }
+  h1,h2,h3,h4,h5,h6 { font-family: var(--site-font-heading, "Inter"), sans-serif; }
+}
 @layer components {
-  .app-background {
-    background-color: var(--page-bg);
-    background-image:
-      radial-gradient(circle at 8% 7%, color-mix(in srgb, var(--theme-primary-raw) 8%, transparent) 0%, transparent 34%),
-      radial-gradient(circle at 93% 12%, color-mix(in srgb, var(--theme-accent-raw) 7%, transparent) 0%, transparent 32%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: var(--text-main);
-  }
-
-  .dark .app-background {
-    background-image:
-      radial-gradient(circle at 8% 7%, color-mix(in srgb, var(--theme-primary-raw) 8%, transparent) 0%, transparent 30%),
-      radial-gradient(circle at 93% 12%, color-mix(in srgb, var(--theme-accent-raw) 6%, transparent) 0%, transparent 28%);
-  }
-
-  .theme-navbar-surface {
-    background: var(--theme-navbar-gradient);
-    color: #ffffff;
-  }
-
-  .theme-navbar-top {
-    background: var(--theme-navbar-top);
-    color: #ffffff;
-  }
-
-  .theme-footer-surface {
-    background: var(--theme-footer-gradient);
-    color: #ffffff;
-  }
-
-  .theme-panel-gradient,
-  .theme-action-gradient {
-    background: var(--theme-panel-gradient);
-    color: #ffffff;
-  }
-
-  .theme-hero-overlay {
-    background: var(--theme-hero-gradient);
-  }
-
-  .theme-popover {
-    border-color: var(--line-default);
-    background: color-mix(in srgb, var(--surface-card-solid) 94%, transparent);
-    color: var(--text-main);
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(18px);
-  }
-
-  .theme-popover-link {
-    color: var(--text-main);
-  }
-
-  .theme-popover-link:hover {
-    background: var(--theme-soft-light);
-    color: var(--theme-on-light);
-  }
-
-  .dark .theme-popover-link:hover {
-    background: var(--theme-soft-dark);
-    color: var(--theme-on-dark);
-  }
-
-  .theme-section {
-    background: transparent;
-    color: var(--text-main);
-  }
-
-  .theme-section-alt {
-    background: var(--surface-section);
-    color: var(--text-main);
-  }
-
-  .theme-card {
-    border: 1px solid var(--line-default);
-    background: var(--surface-card);
-    color: var(--text-main);
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(14px);
-  }
-
-  .theme-card-flat {
-    border: 1px solid var(--line-default);
-    background: var(--surface-card-solid);
-    color: var(--text-main);
-  }
-
-  .theme-muted-surface {
-    border-color: var(--line-default);
-    background: var(--surface-muted);
-    color: var(--text-main);
-  }
-
-  .theme-text-main {
-    color: var(--text-main);
-  }
-
-  .theme-text-secondary {
-    color: var(--text-secondary);
-  }
-
-  .theme-text-muted {
-    color: var(--text-muted);
-  }
-
-  .theme-brand-text {
-    color: var(--theme-on-light);
-  }
-
-  .dark .theme-brand-text {
-    color: var(--theme-on-dark);
-  }
-
-  .theme-accent-text {
-    color: var(--theme-accent-on-light);
-  }
-
-  .dark .theme-accent-text {
-    color: var(--theme-accent-on-dark);
-  }
-
-  .theme-chip {
-    border: 1px solid var(--theme-border-light);
-    background: var(--theme-soft-light);
-    color: var(--theme-on-light);
-  }
-
-  .dark .theme-chip {
-    border-color: var(--theme-border-dark);
-    background: var(--theme-soft-dark);
-    color: var(--theme-on-dark);
-  }
-
-  .theme-action {
-    background: var(--theme-on-light);
-    color: #ffffff;
-  }
-
-  .theme-action:hover {
-    filter: brightness(1.08);
-  }
-
-  .theme-input {
-    border: 1px solid var(--line-default);
-    background: var(--surface-muted);
-    color: var(--text-main);
-    outline: none;
-  }
-
-  .theme-input:focus {
-    border-color: var(--theme-focus);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-focus) 18%, transparent);
-  }
-
-  .theme-divider {
-    border-color: var(--line-default);
-  }
-
-  .theme-navbar-accent {
-    color: var(--theme-navbar-accent);
-  }
-
-  .theme-footer-accent {
-    color: var(--theme-footer-accent);
-  }
-
-  .keep-light-surface {
-    background: #ffffff !important;
-    color: var(--theme-on-light) !important;
-  }
-
-  .form-input-skm {
-    width: 100%;
-    border: 1px solid var(--line-default);
-    border-radius: 0.75rem;
-    background: var(--surface-muted);
-    padding: 0.75rem;
-    color: var(--text-main);
-    font-weight: 500;
-    outline: none;
-    transition: 180ms ease;
-  }
-
-  .form-input-skm:focus {
-    border-color: var(--theme-focus);
-    background: var(--surface-card-solid);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-focus) 16%, transparent);
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Compatibility layer dark mode
-|--------------------------------------------------------------------------
-| Komponen lama masih menggunakan utility light seperti bg-white dan
-| text-slate-800. Lapisan ini membuat seluruh halaman tetap terbaca tanpa
-| menjadikan warna brand sebagai warna surface utama.
-*/
-@layer utilities {
-  .dark main .bg-white {
-    background-color: var(--surface-card-solid) !important;
-  }
-
-  .dark main .bg-white\/70,
-  .dark main .bg-white\/80 {
-    background-color: var(--surface-card) !important;
-  }
-
-  .dark main .bg-slate-50,
-  .dark main .bg-slate-50\/50,
-  .dark main .bg-\[\#f4f9ff\],
-  .dark main .bg-accent-50\/50 {
-    background-color: var(--surface-section) !important;
-  }
-
-  .dark main .bg-slate-100,
-  .dark main .bg-slate-200,
-  .dark main .bg-slate-300,
-  .dark main .bg-primary-50,
-  .dark main .bg-primary-50\/80,
-  .dark main .bg-accent-50,
-  .dark main .bg-accent-100 {
-    background-color: var(--surface-muted) !important;
-  }
-
-
-  .dark main .bg-green-50 {
-    background-color: rgba(34, 197, 94, 0.12) !important;
-  }
-
-  .dark main .bg-orange-100 {
-    background-color: rgba(249, 115, 22, 0.14) !important;
-  }
-
-  .dark main .bg-red-50 {
-    background-color: rgba(239, 68, 68, 0.12) !important;
-  }
-
-  .dark main .text-slate-900,
-  .dark main .text-slate-800,
-  .dark main .text-slate-700 {
-    color: var(--text-main) !important;
-  }
-
-  .dark main .text-slate-600,
-  .dark main .text-slate-500 {
-    color: var(--text-secondary) !important;
-  }
-
-  .dark main .text-slate-400,
-  .dark main .text-slate-300 {
-    color: var(--text-muted) !important;
-  }
-
-  .dark main .text-primary,
-  .dark main .text-primary-700,
-  .dark main .text-primary-800,
-  .dark main .text-primary-900 {
-    color: var(--theme-on-dark) !important;
-  }
-
-  .dark main .text-accent,
-  .dark main .text-accent-600,
-  .dark main .text-accent-700 {
-    color: var(--theme-accent-on-dark) !important;
-  }
-
-
-  .dark main .text-blue-500,
-  .dark main .text-blue-600 {
-    color: #60a5fa !important;
-  }
-
-  .dark main .text-green-700 {
-    color: #86efac !important;
-  }
-
-  .dark main .text-orange-500,
-  .dark main .text-amber-600 {
-    color: #fdba74 !important;
-  }
-
-  .dark main .border-slate-50,
-  .dark main .border-slate-100,
-  .dark main .border-slate-200,
-  .dark main .border-slate-300,
-  .dark main .border-gray-100,
-  .dark main .border-accent-50,
-  .dark main .border-accent-100,
-  .dark main .border-primary-100 {
-    border-color: var(--line-default) !important;
-  }
-
-
-  .dark main .border-green-200 {
-    border-color: rgba(134, 239, 172, 0.24) !important;
-  }
-
-  .dark main .border-red-100 {
-    border-color: rgba(252, 165, 165, 0.24) !important;
-  }
-
-  .dark main .divide-slate-50 > :not(:last-child),
-  .dark main .divide-slate-100 > :not(:last-child) {
-    border-color: var(--line-default) !important;
-  }
-
-  .dark main .shadow-slate-200 {
-    --tw-shadow-color: rgba(0, 0, 0, 0.28) !important;
-  }
-
-  /* Hero memang dirancang selalu memakai teks putih dan tombol putih. */
-  .dark main .theme-hero .bg-white,
-  .dark main .theme-hero .keep-light-surface {
-    background-color: #ffffff !important;
-  }
-
-  .dark main .theme-hero .text-primary,
-  .dark main .theme-hero .keep-light-surface {
-    color: var(--theme-on-light) !important;
-  }
-}
-
-aside nav {
-  scrollbar-width: thin;
-  scrollbar-color: #475569 transparent;
-}
-
-aside nav::-webkit-scrollbar {
-  width: 6px;
-}
-
-aside nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-aside nav::-webkit-scrollbar-thumb {
-  background-color: #475569;
-  border-radius: 9999px;
-}
-
-aside nav::-webkit-scrollbar-thumb:hover {
-  background-color: #64748b;
+  .site-container { width: min(calc(100% - 2rem), var(--site-container, 1280px)); margin-inline: auto; }
+  .theme-card { background: var(--site-surface, #fff); border-radius: var(--site-radius, 14px); }
+  html[data-card-style="soft"] .theme-card { box-shadow: 0 12px 35px rgba(15,23,42,.08); }
+  html[data-card-style="bordered"] .theme-card { border: 1px solid color-mix(in srgb, var(--site-text-secondary) 25%, transparent); }
+  .theme-button { border-radius: var(--site-radius, 14px); transition: .2s ease; }
+  html[data-button-style="solid"] .theme-button { background: var(--color-primary); color: white; }
+  html[data-button-style="outline"] .theme-button { border: 1px solid var(--color-primary); color: var(--color-primary); background: transparent; }
+  html[data-button-style="soft"] .theme-button { background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); }
+  .app-background { background-color: var(--site-background, #f0f5fb); }
 }

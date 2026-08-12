@@ -152,12 +152,13 @@
         </form>
     @endif
 
-    <div class="space-y-4">
+    <div class="mb-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-xs text-slate-500">Tip: seret kartu menu utama dengan handle ☰ untuk mengubah urutan. Tombol naik/turun tidak diperlukan untuk root menu.</div>
+    <div class="space-y-4" x-data="{ dragging: null }">
         @forelse ($rootItems as $item)
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" wire:key="nav-root-{{ $item->id }}">
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" wire:key="nav-root-{{ $item->id }}" draggable="true" @dragstart="dragging={{ $item->id }}" @dragover.prevent @drop.prevent="if(dragging && dragging!=={{ $item->id }}) { $wire.moveBefore(dragging, {{ $item->id }}); dragging=null }">
                 <div class="flex flex-wrap items-center justify-between gap-4 p-5">
                     <div class="min-w-0">
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2"><span class="cursor-grab select-none text-slate-400" title="Drag untuk mengurutkan">☰</span>
                             <span class="font-semibold text-slate-900">{{ $item->label }}</span>
                             <span class="rounded bg-slate-100 px-2 py-0.5 text-xs uppercase text-slate-500">{{ $item->type }}</span>
                             <span class="rounded-full px-2 py-0.5 text-xs {{ $item->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">

@@ -1,44 +1,22 @@
 <div class="p-6 md:p-8">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900">Identitas Website</h1>
-        <p class="mt-1 text-sm text-slate-500">Ubah nama instansi, logo, kontak, sosial media, dan footer tanpa mengubah source code React.</p>
-    </div>
-
-    @if(session('site-settings-message'))
-        <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('site-settings-message') }}</div>
-    @endif
-
+    <div class="mb-6 flex flex-wrap items-start justify-between gap-3"><div><h1 class="text-2xl font-bold text-slate-900">Identitas & SEO Website</h1><p class="mt-1 text-sm text-slate-500">Konfigurasi identitas instansi, kontak, branding, dan metadata mesin pencari.</p></div><a href="{{ route('admin.media') }}" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold">Buka Media Library</a></div>
+    @if(session('site-settings-message'))<div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('site-settings-message') }}</div>@endif
     <form wire:submit="save" class="space-y-6">
-        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-5 text-lg font-bold">Identitas Instansi</h2>
-            <div class="grid gap-5 md:grid-cols-2">
-                <div><label class="mb-1 block text-sm font-semibold">Nama Instansi</label><input wire:model="site_name" class="w-full rounded-xl border border-slate-300 px-3 py-2.5">@error('site_name')<p class="text-xs text-rose-600">{{ $message }}</p>@enderror</div>
-                <div><label class="mb-1 block text-sm font-semibold">Nama Singkat</label><input wire:model="site_short_name" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div>
-                <div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Deskripsi</label><textarea wire:model="site_description" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div>
-                <div><label class="mb-1 block text-sm font-semibold">Logo Baru</label><input type="file" wire:model="logo" accept="image/*" class="block w-full text-sm">@if($existingLogo)<p class="mt-1 text-xs text-slate-500">Saat ini: {{ $existingLogo }}</p>@endif</div>
-                <div><label class="mb-1 block text-sm font-semibold">Favicon Baru</label><input type="file" wire:model="favicon" accept="image/*" class="block w-full text-sm">@if($existingFavicon)<p class="mt-1 text-xs text-slate-500">Saat ini: {{ $existingFavicon }}</p>@endif</div>
-            </div>
-        </section>
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="mb-5 text-lg font-bold">Identitas Instansi</h2><div class="grid gap-5 md:grid-cols-2"><div><label class="mb-1 block text-sm font-semibold">Nama Instansi</label><input wire:model="site_name" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div><label class="mb-1 block text-sm font-semibold">Nama Singkat</label><input wire:model="site_short_name" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Tagline</label><input wire:model="tagline" class="w-full rounded-xl border border-slate-300 px-3 py-2.5" placeholder="Melayani dengan transparan, cepat, dan terintegrasi"></div><div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Deskripsi</label><textarea wire:model="site_description" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div></div></section>
 
-        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-5 text-lg font-bold">Kontak & Sosial Media</h2>
-            <div class="grid gap-5 md:grid-cols-2">
-                <div><label class="mb-1 block text-sm font-semibold">Telepon</label><input wire:model="phone" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div>
-                <div><label class="mb-1 block text-sm font-semibold">Email</label><input wire:model="email" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div>
-                <div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Alamat</label><textarea wire:model="address" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div>
-                @foreach(['instagram_url'=>'Instagram','facebook_url'=>'Facebook','youtube_url'=>'YouTube','tiktok_url'=>'TikTok'] as $field=>$label)
-                    <div><label class="mb-1 block text-sm font-semibold">{{ $label }} URL</label><input wire:model="{{ $field }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5" placeholder="https://..."></div>
-                @endforeach
-                <div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Teks Footer</label><textarea wire:model="footer_text" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div>
-            </div>
-        </section>
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="mb-5 text-lg font-bold">Branding & Logo</h2><div class="grid gap-5 md:grid-cols-2">
+            @foreach([['logo','logo_media_id','Logo Header',$existingLogo],['logo_footer','logo_footer_media_id','Logo Footer',$existingLogoFooter],['logo_dark','logo_dark_media_id','Logo Dark Mode',$existingLogoDark]] as [$upload,$selector,$label,$existing])
+                <div class="rounded-xl border border-slate-200 p-4"><label class="block text-sm font-bold">{{ $label }}</label><input type="file" wire:model="{{ $upload }}" accept="image/*" class="mt-2 block w-full text-sm"><div class="my-2 text-center text-xs text-slate-400">atau pilih Media Library</div><select wire:model="{{ $selector }}" class="w-full rounded-xl border border-slate-300 px-3 py-2"><option value="">-- Tidak memilih --</option>@foreach($mediaImages as $media)<option value="{{ $media->id }}">{{ $media->name }}</option>@endforeach</select>@if($existing)<p class="mt-2 truncate text-xs text-slate-500">Saat ini: {{ $existing }}</p>@endif</div>
+            @endforeach
+            <div class="rounded-xl border border-slate-200 p-4"><label class="block text-sm font-bold">Favicon</label><input type="file" wire:model="favicon" accept="image/*" class="mt-2 block w-full text-sm">@if($existingFavicon)<p class="mt-2 truncate text-xs text-slate-500">Saat ini: {{ $existingFavicon }}</p>@endif</div>
+        </div></section>
 
-        <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Event sementara seperti 17 Agustus sekarang dibuat melalui <strong>Manajemen Halaman</strong> lalu dimasukkan ke <strong>Manajemen Navbar</strong>. Tidak ada banner tambahan yang dipaksakan di atas navbar.
-        </div>
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="mb-5 text-lg font-bold">Kontak & Lokasi</h2><div class="grid gap-5 md:grid-cols-2"><div><label class="mb-1 block text-sm font-semibold">Telepon</label><input wire:model="phone" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div><label class="mb-1 block text-sm font-semibold">WhatsApp</label><input wire:model="whatsapp" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div><label class="mb-1 block text-sm font-semibold">Email</label><input wire:model="email" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div><label class="mb-1 block text-sm font-semibold">Jam Pelayanan</label><input wire:model="service_hours" class="w-full rounded-xl border border-slate-300 px-3 py-2.5" placeholder="Senin–Jumat 08.00–16.00"></div><div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Alamat</label><textarea wire:model="address" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div><div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Google Maps / Embed URL</label><input wire:model="maps_url" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div></div></section>
 
-        <button type="submit" wire:loading.attr="disabled" wire:target="save" class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
-            Simpan Pengaturan Website
-        </button>
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="mb-5 text-lg font-bold">Sosial Media & Footer</h2><div class="grid gap-5 md:grid-cols-2">@foreach(['instagram_url'=>'Instagram','facebook_url'=>'Facebook','youtube_url'=>'YouTube','tiktok_url'=>'TikTok'] as $field=>$label)<div><label class="mb-1 block text-sm font-semibold">{{ $label }} URL</label><input wire:model="{{ $field }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5" placeholder="https://..."></div>@endforeach<div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Teks Footer</label><textarea wire:model="footer_text" rows="2" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div></div></section>
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="mb-1 text-lg font-bold">SEO Default</h2><p class="mb-5 text-sm text-slate-500">Dipakai ketika halaman tidak memiliki SEO khusus.</p><div class="grid gap-5 md:grid-cols-2"><div><label class="mb-1 block text-sm font-semibold">Site / SEO Title</label><input wire:model="seo_title" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></div><div><label class="mb-1 block text-sm font-semibold">Canonical Domain</label><input wire:model="canonical_url" class="w-full rounded-xl border border-slate-300 px-3 py-2.5" placeholder="https://domain.go.id"></div><div class="md:col-span-2"><label class="mb-1 block text-sm font-semibold">Meta Description</label><textarea wire:model="meta_description" rows="3" class="w-full rounded-xl border border-slate-300 px-3 py-2.5"></textarea></div><div><label class="mb-1 block text-sm font-semibold">Default OG Image</label><input type="file" wire:model="default_og" accept="image/*" class="block w-full text-sm"><select wire:model="default_og_media_id" class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2"><option value="">atau pilih Media Library</option>@foreach($mediaImages as $media)<option value="{{ $media->id }}">{{ $media->name }}</option>@endforeach</select>@if($existingOg)<p class="mt-1 text-xs text-slate-500">Saat ini: {{ $existingOg }}</p>@endif</div><label class="mt-7 flex items-center gap-3 text-sm font-semibold"><input type="checkbox" wire:model="robots_index" class="h-4 w-4 rounded"> Izinkan mesin pencari mengindeks website</label></div></section>
+
+        <button type="submit" wire:loading.attr="disabled" class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white">Simpan Draft Konfigurasi</button>
     </form>
 </div>

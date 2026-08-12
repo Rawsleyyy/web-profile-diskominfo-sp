@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Helpers\ActivityLogger;
 use App\Models\CustomPage;
 use App\Models\HomepageSection;
+use App\Models\MediaAsset;
 use App\Models\SiteModule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -30,6 +31,7 @@ class HomepageManager extends Component
     public string $content = '';
     public $image = null;
     public ?string $existingImage = null;
+    public string|int $media_asset_id = '';
     public string $button_text = '';
     public string $button_url = '';
 
@@ -69,6 +71,7 @@ class HomepageManager extends Component
         $this->video_url = (string) ($settings['video_url'] ?? '');
         $this->spacer_size = (string) ($settings['size'] ?? 'md');
         $this->image = null;
+        $this->media_asset_id = '';
         $this->showForm = true;
         $this->resetValidation();
     }
@@ -96,6 +99,7 @@ class HomepageManager extends Component
             'subtitle' => ['nullable', 'string', 'max:500'],
             'content' => ['nullable', 'string', 'max:20000'],
             'image' => ['nullable', 'image', 'max:4096'],
+            'media_asset_id' => ['nullable', 'exists:media_assets,id'],
             'button_text' => ['nullable', 'string', 'max:80'],
             'button_url' => ['nullable', 'string', 'max:1000'],
             'source_page_id' => ['nullable', 'exists:custom_pages,id'],
@@ -131,10 +135,12 @@ class HomepageManager extends Component
         $imagePath = $settings['image_path'] ?? null;
 
         if ($this->image) {
-            if ($imagePath && ! $this->imagePathUsedByOtherSection($imagePath, $section->id)) {
+            if ($imagePath && ! str_starts_with($imagePath, 'media-library/') && ! $this->imagePathUsedByOtherSection($imagePath, $section->id)) {
                 Storage::disk('public')->delete($imagePath);
             }
             $imagePath = $this->image->store('homepage-sections', 'public');
+        } elseif (! empty($validated['media_asset_id'])) {
+            $imagePath = MediaAsset::find($validated['media_asset_id'])?->path ?: $imagePath;
         }
 
         $settings = match ($validated['section_type']) {
@@ -229,7 +235,7 @@ class HomepageManager extends Component
         $label = $section->label;
         $section->delete();
 
-        if ($imagePath && ! $this->imagePathUsedByOtherSection($imagePath)) {
+        if ($imagePath && ! str_starts_with($imagePath, 'media-library/') && ! $this->imagePathUsedByOtherSection($imagePath)) {
             Storage::disk('public')->delete($imagePath);
         }
 
@@ -249,6 +255,18 @@ class HomepageManager extends Component
             auth()->id(),
             $section->label.' '.($section->is_enabled ? 'Aktif' : 'Nonaktif')
         );
+    }
+
+    public function moveBefore(int $draggedId, int $targetId): void
+    {
+        if ($draggedId === $targetId) return;
+        $dragged = HomepageSection::findOrFail($draggedId);
+        $target = HomepageSection::findOrFail($targetId);
+        $items = HomepageSection::query()->orderBy('sort_order')->orderBy('id')->get()->reject(fn ($item) => $item->id === $dragged->id)->values();
+        $targetIndex = $items->search(fn ($item) => $item->id === $target->id);
+        $items->splice($targetIndex === false ? $items->count() : $targetIndex, 0, [$dragged]);
+        foreach ($items as $index => $item) $item->update(['sort_order' => ($index + 1) * 10]);
+        ActivityLogger::log('Homepage Section', 'REORDER', 'success', auth()->id(), $dragged->label);
     }
 
     public function moveUp(int $id): void
@@ -298,6 +316,7 @@ class HomepageManager extends Component
             'subtitle',
             'content',
             'image',
+            'media_asset_id',
             'existingImage',
             'button_text',
             'button_url',
@@ -337,6 +356,7 @@ class HomepageManager extends Component
             'sections' => HomepageSection::query()->orderBy('sort_order')->get(),
             'modules' => $modules,
             'pages' => CustomPage::query()->orderByDesc('is_published')->orderBy('title')->get(),
+            'mediaImages' => MediaAsset::query()->where('mime_type', 'like', 'image/%')->latest()->limit(100)->get(),
         ]);
     }
 }

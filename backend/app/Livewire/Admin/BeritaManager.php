@@ -69,6 +69,11 @@ class BeritaManager extends Component
             'konten.required' => 'Konten berita wajib diisi',
         ]);
 
+        if ($this->status_publish && ! auth()->user()?->hasPermission('content.publish')) {
+            $this->addError('status_publish', 'Role Anda tidak memiliki permission untuk publish berita.');
+            return;
+        }
+
         $data = [
             'judul'          => $this->judul,
             'konten'         => $this->konten,
@@ -103,6 +108,7 @@ class BeritaManager extends Component
 
     public function togglePublish(int $id)
     {
+        abort_unless(auth()->user()?->hasPermission('content.publish'), 403);
         $berita = Berita::findOrFail($id);
         $berita->status_publish = ! $berita->status_publish;
         $berita->save();

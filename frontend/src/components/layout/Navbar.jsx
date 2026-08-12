@@ -3,6 +3,7 @@ import { ChevronDown, Clock, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDateTime } from "@/hooks/UseDateTime";
 import { useSiteConfig } from "../../context/siteconfigcontext";
+import { useTheme } from "../../context/themecontext";
 import logoNavbar from "../../assets/diskomifo-pemkot.png";
 
 function MenuLink({ item, className = "", onClick }) {
@@ -86,6 +87,7 @@ function DesktopMenuItem({ item, opened, onOpen, onClose }) {
 
 export default function Navbar({ dark, toggleDark }) {
   const { navigation, settings } = useSiteConfig();
+  const { navbarStyle, secondary } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drop, setDrop] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -113,13 +115,18 @@ export default function Navbar({ dark, toggleDark }) {
     closeTimer.current = setTimeout(() => setDrop(null), 180);
   };
 
-  const logo = settings?.logo_url || logoNavbar;
+  const logo = (dark && settings?.logo_dark_url) || settings?.logo_url || logoNavbar;
+  const navbarBackground = navbarStyle === "minimal"
+    ? "color-mix(in srgb, var(--color-primary) 88%, transparent)"
+    : navbarStyle === "gradient"
+      ? "linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 55%, var(--color-accent)) 100%)"
+      : "var(--color-primary)";
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 font-sans">
       <div
         className={`hidden overflow-hidden border-b border-white/10 transition-all duration-300 md:block ${scrolled ? "max-h-0 opacity-0" : "max-h-12 opacity-100"}`}
-        style={{ background: "#1c2030" }}
+        style={{ background: secondary || "var(--color-secondary, #0F172A)" }}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-2">
           <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-slate-300">
@@ -138,7 +145,7 @@ export default function Navbar({ dark, toggleDark }) {
         <div
           className={`relative mx-auto flex items-center justify-between border-white/20 backdrop-blur-xl transition-all duration-300 ${scrolled ? "max-w-7xl rounded-2xl border px-5 py-2.5" : "max-w-full border-b px-6 py-3.5"}`}
           style={{
-            background: "linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 96%, #0f172a) 0%, var(--color-primary) 58%, color-mix(in srgb, var(--color-primary) 65%, var(--color-accent)) 100%)",
+            background: navbarBackground,
             boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,.20)" : "none",
           }}
         >

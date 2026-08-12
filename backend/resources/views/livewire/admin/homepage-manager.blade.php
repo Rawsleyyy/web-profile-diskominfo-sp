@@ -77,6 +77,10 @@
                     <div>
                         <label class="mb-1.5 block text-sm font-semibold text-slate-700">Gambar (opsional)</label>
                         <input type="file" wire:model="image" accept="image/*" class="block w-full text-sm text-slate-600">
+                        <select wire:model="media_asset_id" class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
+                            <option value="">atau pilih dari Media Library</option>
+                            @foreach($mediaImages as $media)<option value="{{ $media->id }}">{{ $media->name }}</option>@endforeach
+                        </select>
                         @if ($existingImage)
                             <p class="mt-1 text-xs text-slate-500">Gambar saat ini: {{ $existingImage }}</p>
                         @endif
@@ -190,7 +194,8 @@
         </form>
     @endif
 
-    <div class="space-y-3">
+    <div class="mb-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-xs text-slate-500">Tip: drag kartu dengan handle ☰ untuk mengubah urutan. Tombol ↑ ↓ tetap tersedia sebagai fallback.</div>
+    <div class="space-y-3" x-data="{ dragging: null }">
         @foreach($sections as $section)
             @php
                 $module = $section->module_slug ? ($modules[$section->module_slug] ?? null) : null;
@@ -205,11 +210,11 @@
                 ];
             @endphp
 
-            <div wire:key="homepage-section-{{ $section->id }}" class="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <div wire:key="homepage-section-{{ $section->id }}" draggable="true" @dragstart="dragging={{ $section->id }}" @dragover.prevent @drop.prevent="if(dragging && dragging!=={{ $section->id }}) { $wire.moveBefore(dragging, {{ $section->id }}); dragging=null }" class="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="font-semibold text-slate-900">{{ $section->label }}</span>
+                            <span class="cursor-grab select-none text-slate-400" title="Drag untuk mengurutkan">☰</span><span class="font-semibold text-slate-900">{{ $section->label }}</span>
                             <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{{ $typeLabels[$section->section_type] ?? $section->section_type }}</span>
                             @if ($isBuiltin)
                                 <span class="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">{{ $section->section_key }}</span>
