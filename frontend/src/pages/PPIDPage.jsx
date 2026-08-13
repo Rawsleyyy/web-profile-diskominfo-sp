@@ -1,20 +1,33 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FileText, ShieldCheck, Zap, Lock, Users, Info, Scale, Award, Download, Search, ChevronRight } from 'lucide-react';
-import { api, BASE_URL } from '../services/api';
+import { api, storageUrl } from '../services/api';
+
+const TAB_MAP = {
+  daftar: 'Daftar Informasi Publik',
+  berkala: 'Informasi Berkala',
+  'setiap-saat': 'Informasi Setiap Saat',
+  'serta-merta': 'Informasi Serta Merta',
+  dikecualikan: 'Informasi Dikecualikan',
+};
+
+function resolveTab(value) {
+  if (!value) return 'Daftar Informasi Publik';
+  return TAB_MAP[value] || value;
+}
 
 export default function PPIDPage() {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
 
-  const [activeTab, setActiveTab] = useState(tabFromUrl || 'Daftar Informasi Publik');
+  const [activeTab, setActiveTab] = useState(() => resolveTab(tabFromUrl));
   const [dokumen, setDokumen] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Kalau user klik menu PPID lagi dari navbar saat sudah di halaman ini, ikut update tab-nya
   useEffect(() => {
-    if (tabFromUrl) setActiveTab(tabFromUrl);
+    setActiveTab(resolveTab(tabFromUrl));
   }, [tabFromUrl]);
 
   useEffect(() => {
@@ -36,7 +49,7 @@ export default function PPIDPage() {
       .filter((doc) => doc.judul.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [dokumen, activeTab, searchTerm]);
 
-  const getFileUrl = (doc) => `${BASE_URL}/storage/${doc.file_path}`;
+  const getFileUrl = (doc) => storageUrl(doc.file_path) || '#';
 
   // Menu Sidebar sesuai Poin #8
   const menuPPID = [
