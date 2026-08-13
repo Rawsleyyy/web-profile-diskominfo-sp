@@ -63,7 +63,7 @@ Route::post('/moniks/ask', [MoniksController::class, 'ask'])->middleware(['modul
 Route::post('/skm/store', [SkmController::class, 'store'])->middleware(['module:skm', 'throttle:10,1']);
 Route::get('/skm/stats', [SkmController::class, 'getStats'])->middleware('module:skm');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'active.user'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
     Route::get('/me', [AuthController::class, 'me']);
 

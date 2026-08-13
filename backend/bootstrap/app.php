@@ -19,11 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\TrackVisitor::class,
             \App\Http\Middleware\ExpireAdminSession::class,
+            \App\Http\Middleware\EnsureUserIsActive::class,
         ]);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'module' => \App\Http\Middleware\EnsureSiteModuleEnabled::class,
+            'active.user' => \App\Http\Middleware\EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

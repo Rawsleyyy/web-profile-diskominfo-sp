@@ -71,9 +71,14 @@ class PejabatManager extends Component
             'jabatan.required' => 'Jabatan wajib diisi',
         ]);
 
-        // Cegah orang jadi atasan dirinya sendiri
+        // Cegah relasi hierarki yang tidak valid: diri sendiri atau turunannya dijadikan atasan.
         if ($this->editingId && $this->parent_id == $this->editingId) {
             $this->addError('parent_id', 'Pejabat tidak bisa menjadi atasan dirinya sendiri.');
+            return;
+        }
+
+        if ($this->editingId && $this->parent_id && $this->wouldCreateHierarchyCycle((int) $this->editingId, (int) $this->parent_id)) {
+            $this->addError('parent_id', 'Atasan yang dipilih berada di bawah pejabat ini. Pilihan tersebut akan membuat struktur organisasi melingkar.');
             return;
         }
 
@@ -122,6 +127,29 @@ class PejabatManager extends Component
 
         $this->logActivity('DELETE', 'Pejabat: ' . $nama);
         session()->flash('message', 'Pejabat berhasil dihapus.');
+    }
+
+
+    private function wouldCreateHierarchyCycle(int $editingId, int $candidateParentId): bool
+    {
+        $currentId = $candidateParentId;
+        $visited = [];
+
+        while ($currentId) {
+            if ($currentId === $editingId) {
+                return true;
+            }
+
+            if (isset($visited[$currentId])) {
+                // Data lama sudah mengandung siklus; jangan izinkan relasi baru memperparahnya.
+                return true;
+            }
+
+            $visited[$currentId] = true;
+            $currentId = (int) (Pejabat::whereKey($currentId)->value('parent_id') ?: 0);
+        }
+
+        return false;
     }
 
     private function logActivity(string $method, string $description): void

@@ -10,25 +10,34 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsActive
 {
+    /**
+     * Menolak akun yang telah dinonaktifkan walaupun sesi/token masih aktif.
+     * Berlaku untuk dashboard web/Livewire dan endpoint API terautentikasi.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->is('admin/*') && ! $request->is('livewire/*')) {
-            return $next($request);
-        }
-
-        $user = Auth::guard('web')->user();
+        $user = $request->user();
 
         if (! $user || $user->status === 'active') {
             return $next($request);
         }
 
         ActivityLogger::log(
-            subject: 'Akun admin dinonaktifkan saat sesi masih berjalan',
+            subject: 'Akun dinonaktifkan saat sesi/token masih aktif',
             method: 'LOGOUT',
             status: 'failed',
             userId: $user->id,
             description: $user->email,
         );
+
+        if ($request->is('api/*')) {
+            $user->currentAccessToken()?->delete();
+
+            return response()->json([
+                'message' => 'Akun Anda telah dinonaktifkan. Hubungi Super Admin.',
+                'code' => 'ADMIN_ACCOUNT_INACTIVE',
+            ], 403);
+        }
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();

@@ -9,7 +9,7 @@
         <div>
             <h1 class="text-2xl font-bold text-black dark:text-white">Kelola Struktur Organisasi</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                2 pejabat dengan status "Tampilkan di Beranda" akan muncul di homepage. Pilih "Atasan" untuk menyusun hierarki lengkap yang tampil di halaman "Struktur Organisasi".
+                Pilih "Atasan" untuk membentuk hierarki data tree. Halaman Struktur Organisasi membaca relasi parent-child tersebut, sedangkan beranda menampilkan ringkasan level teratas dan bawahan langsung.
             </p>
         </div>
 

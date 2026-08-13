@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\ActivityLogger;
-use App\Http\Controllers\SpaAuthController;
 use App\Livewire\Admin\Articles;
 use App\Livewire\Admin\Awards;
 use App\Livewire\Admin\DokumenPublikManager;
@@ -21,7 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 Route::view('/admin/login', 'admin.login')->middleware('guest')->name('admin.login');
-Route::post('/auth/login', [SpaAuthController::class, 'login'])->middleware('throttle:5,1')->name('auth.login');
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
