@@ -7,9 +7,9 @@
 
     <div class="mb-[25px] flex items-start justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-black">Kelola Header</h1>
+            <h1 class="text-2xl font-bold text-black">Kelola Banner</h1>
             <p class="mt-1 text-sm text-gray-500">
-                Atur gambar, teks, urutan, tombol, dan status slide pada header halaman publik.
+                Atur gambar, judul, deskripsi, urutan, tombol, dan status slide banner utama pada halaman publik.
             </p>
         </div>
 
@@ -18,7 +18,7 @@
             wire:click="openCreate"
             class="flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-blue-700"
         >
-            + Tambah Header
+            + Tambah Banner
         </button>
     </div>
 
@@ -79,7 +79,7 @@
                                 <button
                                     type="button"
                                     wire:click="delete({{ $slide->id }})"
-                                    wire:confirm="Yakin ingin menghapus header ini? File gambarnya juga akan dihapus."
+                                    wire:confirm="Yakin ingin menghapus banner ini? File gambarnya juga akan dihapus."
                                     wire:loading.attr="disabled"
                                     wire:target="delete({{ $slide->id }})"
                                     class="text-red-600 hover:underline disabled:opacity-50"
@@ -91,7 +91,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center text-gray-400">
-                                Belum ada header dari dashboard. Halaman publik masih menggunakan gambar cadangan bawaan React.
+                                Belum ada banner dari dashboard. Halaman publik masih menggunakan banner cadangan bawaan.
                             </td>
                         </tr>
                     @endforelse
@@ -101,7 +101,7 @@
     </div>
 
     <div class="mt-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-        Rekomendasi gambar: rasio lebar, minimal 1000 × 350 piksel, format JPG/PNG/WebP, maksimal 5 MB.
+        Rekomendasi gambar: 1920 × 600 piksel atau rasio lebar serupa. Minimal 1000 × 350 piksel, JPG/PNG/WebP, maksimal 5 MB.
     </div>
 
     @if ($isModalOpen)
@@ -110,21 +110,21 @@
                 <div class="mb-5 flex items-center justify-between">
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">
-                            {{ $editingId ? 'Edit Header' : 'Tambah Header' }}
+                            {{ $editingId ? 'Edit Banner' : 'Tambah Banner' }}
                         </h2>
-                        <p class="mt-1 text-sm text-gray-500">Data aktif akan dibaca oleh halaman React melalui API.</p>
+                        <p class="mt-1 text-sm text-gray-500">Banner berstatus aktif akan otomatis tampil pada slider halaman depan.</p>
                     </div>
                     <button type="button" wire:click="closeModal" class="text-2xl leading-none text-gray-400 hover:text-gray-700">&times;</button>
                 </div>
 
                 <form wire:submit="save" class="space-y-5">
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Judul Header <span class="text-red-500">*</span></label>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Judul Banner <span class="text-red-500">*</span></label>
                         <input
                             type="text"
                             wire:model="title"
                             class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                            placeholder="Contoh: DISKOMINFO SP KOTA SURAKARTA"
+                            placeholder="Contoh: Informasi DISKOMINFO SP"
                         >
                         @error('title') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                     </div>
@@ -135,7 +135,7 @@
                             wire:model="subtitle"
                             rows="3"
                             class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                            placeholder="Teks singkat di bawah judul header"
+                            placeholder="Teks singkat yang tampil di bawah judul banner"
                         ></textarea>
                         @error('subtitle') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                     </div>
@@ -191,13 +191,13 @@
 
                     <label class="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
                         <input type="checkbox" wire:model="isActive" class="h-4 w-4 rounded border-gray-300 text-blue-600">
-                        <span class="text-sm font-medium text-gray-700">Tampilkan header ini di halaman publik</span>
+                        <span class="text-sm font-medium text-gray-700">Tampilkan banner ini di halaman publik</span>
                     </label>
 
                     <div class="flex justify-end gap-3 border-t border-gray-100 pt-4">
                         <button type="button" wire:click="closeModal" class="rounded-lg bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300">Batal</button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="save,image" class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60">
-                            <span wire:loading.remove wire:target="save">Simpan Header</span>
+                            <span wire:loading.remove wire:target="save">Simpan Banner</span>
                             <span wire:loading wire:target="save">Menyimpan...</span>
                         </button>
                     </div>

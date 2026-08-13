@@ -32,6 +32,7 @@ function MenuLink({ item, className = "", onClick }) {
 function DesktopMenuItem({ item, opened, onOpen, onClose }) {
   const hasChildren = Array.isArray(item.children) && item.children.length > 0;
   const menuKey = item.id ?? item.label;
+  const isOpen = opened === menuKey;
   const isPureDropdown = item.type === "dropdown" || item.url === "#";
 
   return (
@@ -40,11 +41,11 @@ function DesktopMenuItem({ item, opened, onOpen, onClose }) {
       onMouseEnter={() => hasChildren && onOpen(menuKey)}
       onMouseLeave={onClose}
     >
-      <div className="flex items-center rounded-xl text-[11px] font-bold uppercase tracking-tight text-white/90 transition hover:bg-white/15">
+      <div className={`flex items-center rounded-xl text-[11px] font-bold uppercase tracking-tight text-white/90 transition ${isOpen ? "bg-white/12" : "hover:bg-white/15"}`}>
         {isPureDropdown ? (
           <button
             type="button"
-            onClick={() => hasChildren && onOpen(opened === menuKey ? null : menuKey)}
+            onClick={() => hasChildren && onOpen(isOpen ? null : menuKey)}
             className="px-3 py-2 text-white/90 hover:text-white"
           >
             {item.label}
@@ -56,20 +57,20 @@ function DesktopMenuItem({ item, opened, onOpen, onClose }) {
         {hasChildren && (
           <button
             type="button"
-            onClick={() => onOpen(opened === menuKey ? null : menuKey)}
+            onClick={() => onOpen(isOpen ? null : menuKey)}
             aria-label={`Buka submenu ${item.label}`}
             className="mr-2 flex h-7 w-6 items-center justify-center"
           >
-            <ChevronDown size={11} className={`transition-transform ${opened === menuKey ? "rotate-180" : ""}`} />
+            <ChevronDown size={11} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
           </button>
         )}
       </div>
 
-      {hasChildren && opened === menuKey && (
+      {hasChildren && isOpen && (
         <div
           onMouseEnter={() => onOpen(menuKey)}
           onMouseLeave={onClose}
-          className="absolute left-0 top-full mt-2 min-w-64 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl"
+          className="absolute left-0 top-full z-[80] mt-2 min-w-64 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur-xl"
         >
           {item.children.map((child) => (
             <MenuLink
@@ -138,10 +139,18 @@ export default function Navbar({ dark, toggleDark }) {
         <div
           className={`relative mx-auto flex items-center justify-between border-white/20 backdrop-blur-xl transition-all duration-300 ${scrolled ? "max-w-7xl rounded-2xl border px-5 py-2.5" : "max-w-full border-b px-6 py-3.5"}`}
           style={{
-            background: "linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 96%, #0f172a) 0%, var(--color-primary) 58%, color-mix(in srgb, var(--color-primary) 65%, var(--color-accent)) 100%)",
-            boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,.20)" : "none",
+            background:
+              "linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 72%, #163300) 0%, color-mix(in srgb, var(--color-primary) 88%, var(--color-accent)) 48%, color-mix(in srgb, var(--color-accent) 62%, #0f172a) 100%)",
+            boxShadow: scrolled ? "0 10px 30px rgba(0,0,0,.22)" : "none",
           }}
         >
+          <div className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${scrolled ? "rounded-2xl" : ""}`}>
+            <div className="absolute -left-8 top-0 h-full w-48 bg-white/10 blur-3xl" />
+            <div className="absolute right-0 top-0 h-full w-64 bg-lime-300/10 blur-3xl" />
+            <div className="absolute inset-x-0 top-0 h-px bg-white/25" />
+            <div className="absolute inset-x-0 bottom-0 h-px bg-black/10" />
+          </div>
+
           <Link to="/" className="relative z-10 flex min-w-0 items-center gap-3">
             <img src={logo} alt={settings?.site_short_name || "Logo Instansi"} className="h-10 max-w-52 object-contain md:h-11" />
             {settings?.logo_url && (
@@ -151,7 +160,7 @@ export default function Navbar({ dark, toggleDark }) {
             )}
           </Link>
 
-          <nav className="relative z-10 hidden items-center gap-1 lg:flex">
+          <nav className="relative z-20 hidden items-center gap-1 lg:flex">
             {(navigation || []).map((item) => (
               <DesktopMenuItem
                 key={item.id ?? item.label}
@@ -163,7 +172,7 @@ export default function Navbar({ dark, toggleDark }) {
             ))}
           </nav>
 
-          <div className="relative z-10 flex items-center gap-2">
+          <div className="relative z-20 flex items-center gap-2">
             <button type="button" className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white" aria-label="Cari">
               <Search size={15} />
             </button>

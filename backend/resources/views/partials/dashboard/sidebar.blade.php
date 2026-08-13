@@ -32,6 +32,8 @@
 
         <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Website Builder</p>
         <a href="{{ route('admin.site-settings') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.site-settings') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🏢</span><span>Identitas Website</span></a>
+        <a href="{{ route('admin.header-settings') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.header-settings') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🧱</span><span>Kelola Header</span></a>
+        <a href="{{ route('admin.hero-slides') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.hero-slides') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🖼️</span><span>Kelola Banner</span></a>
         <a href="{{ route('admin.theme-settings') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.theme-settings') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🎨</span><span>Theme Settings</span></a>
         <a href="{{ route('admin.modules') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.modules') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🧩</span><span>Manajemen Modul</span></a>
         <a href="{{ route('admin.pages') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.pages') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>📄</span><span>Manajemen Halaman</span></a>
@@ -39,6 +41,9 @@
         <a href="{{ route('admin.homepage') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.homepage') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>🏠</span><span>Pengaturan Beranda</span></a>
 
         <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Konten & Modul</p>
+        @if ($moduleEnabled('faq'))
+            <a href="{{ route('admin.faq') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.faq') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>💬</span><span>FAQ & MONIKS</span></a>
+        @endif
         @if ($moduleEnabled('berita'))
             <a href="{{ route('admin.berita') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 font-medium {{ request()->routeIs('admin.berita') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}"><span>📰</span><span>Kelola Berita</span></a>
         @endif

@@ -5,7 +5,10 @@ use App\Http\Controllers\SpaAuthController;
 use App\Livewire\Admin\Articles;
 use App\Livewire\Admin\Awards;
 use App\Livewire\Admin\DokumenPublikManager;
+use App\Livewire\Admin\FaqManager;
 use App\Livewire\Admin\HomepageManager;
+use App\Livewire\Admin\HeaderSettingsManager;
+use App\Livewire\Admin\HeroSlides;
 use App\Livewire\Admin\Layanan;
 use App\Livewire\Admin\ModulesManager;
 use App\Livewire\Admin\NavigationManager;
@@ -25,11 +28,14 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // Website Builder: konfigurasi lintas-instansi.
     Route::get('/site-settings', SiteSettingsManager::class)->name('site-settings');
+    Route::get('/header-settings', HeaderSettingsManager::class)->name('header-settings');
+    Route::get('/hero-slides', HeroSlides::class)->name('hero-slides');
     Route::view('/theme-settings', 'admin.theme-settings')->name('theme-settings');
     Route::get('/modules', ModulesManager::class)->name('modules');
     Route::get('/pages', PagesManager::class)->name('pages');
     Route::get('/navigation', NavigationManager::class)->name('navigation');
     Route::get('/homepage', HomepageManager::class)->name('homepage');
+    Route::get('/faq', FaqManager::class)->name('faq');
 
     // Modul konten yang sudah tersedia.
     Route::view('/berita', 'admin.berita')->name('berita');

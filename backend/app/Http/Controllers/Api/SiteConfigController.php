@@ -126,6 +126,21 @@ class SiteConfigController extends Controller
                 'address' => null,
                 'socials' => [],
                 'footer_text' => null,
+                'header' => [
+                    'style' => 'theme_gradient',
+                    'width_mode' => 'adaptive',
+                    'show_site_name' => true,
+                    'logo_height' => 44,
+                    'topbar_enabled' => true,
+                    'topbar_color' => '#1C2030',
+                    'search_enabled' => true,
+                    'dark_toggle_enabled' => true,
+                    'glass_enabled' => true,
+                    'shadow_enabled' => true,
+                    'custom_color_start' => '#0B8A3B',
+                    'custom_color_end' => '#46535B',
+                    'gradient_angle' => 90,
+                ],
             ];
         }
 
@@ -145,6 +160,21 @@ class SiteConfigController extends Controller
                 'tiktok' => $settings->tiktok_url,
             ],
             'footer_text' => $settings->footer_text,
+            'header' => [
+                'style' => $settings->header_style ?: 'theme_gradient',
+                'width_mode' => $settings->header_width_mode ?: 'adaptive',
+                'show_site_name' => (bool) ($settings->header_show_site_name ?? true),
+                'logo_height' => (int) ($settings->header_logo_height ?: 44),
+                'topbar_enabled' => (bool) ($settings->header_topbar_enabled ?? true),
+                'topbar_color' => $settings->header_topbar_color ?: '#1C2030',
+                'search_enabled' => (bool) ($settings->header_search_enabled ?? true),
+                'dark_toggle_enabled' => (bool) ($settings->header_dark_toggle_enabled ?? true),
+                'glass_enabled' => (bool) ($settings->header_glass_enabled ?? true),
+                'shadow_enabled' => (bool) ($settings->header_shadow_enabled ?? true),
+                'custom_color_start' => $settings->header_custom_color_start ?: '#0B8A3B',
+                'custom_color_end' => $settings->header_custom_color_end ?: '#46535B',
+                'gradient_angle' => (int) ($settings->header_gradient_angle ?? 90),
+            ],
         ];
     }
 }

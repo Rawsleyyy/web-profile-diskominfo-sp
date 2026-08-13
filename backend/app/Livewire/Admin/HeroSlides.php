@@ -77,7 +77,7 @@ class HeroSlides extends Component
         ];
 
         $messages = [
-            'image.required' => 'Gambar header wajib dipilih.',
+            'image.required' => 'Gambar banner wajib dipilih.',
             'image.max' => 'Ukuran gambar maksimal 5 MB.',
             'image.dimensions' => 'Resolusi gambar minimal 1000 × 350 piksel.',
         ];
@@ -115,7 +115,7 @@ class HeroSlides extends Component
         $slide->save();
 
         ActivityLogger::log(
-            subject: 'Hero Header',
+            subject: 'Hero Banner',
             method: $isNew ? 'CREATE' : 'UPDATE',
             status: 'success',
             userId: auth()->id(),
@@ -123,8 +123,8 @@ class HeroSlides extends Component
         );
 
         session()->flash('message', $isNew
-            ? 'Header berhasil ditambahkan.'
-            : 'Header berhasil diperbarui.');
+            ? 'Banner berhasil ditambahkan.'
+            : 'Banner berhasil diperbarui.');
 
         $this->closeModal();
     }
@@ -135,14 +135,14 @@ class HeroSlides extends Component
         $slide->update(['is_active' => ! $slide->is_active]);
 
         ActivityLogger::log(
-            subject: 'Hero Header',
+            subject: 'Hero Banner',
             method: 'UPDATE',
             status: 'success',
             userId: auth()->id(),
             description: $slide->title.' - '.($slide->is_active ? 'diaktifkan' : 'dinonaktifkan'),
         );
 
-        session()->flash('message', 'Status header berhasil diubah.');
+        session()->flash('message', 'Status banner berhasil diubah.');
     }
 
     public function delete(int $id): void
@@ -157,14 +157,14 @@ class HeroSlides extends Component
         $slide->delete();
 
         ActivityLogger::log(
-            subject: 'Hero Header',
+            subject: 'Hero Banner',
             method: 'DELETE',
             status: 'success',
             userId: auth()->id(),
             description: $title,
         );
 
-        session()->flash('message', 'Header berhasil dihapus.');
+        session()->flash('message', 'Banner berhasil dihapus.');
     }
 
     private function resetForm(): void

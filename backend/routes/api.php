@@ -6,10 +6,13 @@ use App\Http\Controllers\Api\AwardController;
 use App\Http\Controllers\Api\BeritaController;
 use App\Http\Controllers\Api\CustomPageController;
 use App\Http\Controllers\Api\DokumenController;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\HeroSlideController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LayananController;
 use App\Http\Controllers\Api\LogActivityController;
 use App\Http\Controllers\Api\ModuleController;
+use App\Http\Controllers\Api\MoniksController;
 use App\Http\Controllers\Api\NavigationController;
 use App\Http\Controllers\Api\PejabatController;
 use App\Http\Controllers\Api\PodcastController;
@@ -24,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('api.login');
 
 Route::get('/site-config', [SiteConfigController::class, 'index']);
+Route::get('/hero-slides', [HeroSlideController::class, 'index']);
 Route::get('/navigation', [NavigationController::class, 'index']);
 Route::get('/modules', [ModuleController::class, 'index']);
 Route::get('/pages/{slug}', [CustomPageController::class, 'show']);
@@ -54,6 +58,8 @@ Route::get('/podcast', [PodcastController::class, 'index'])->middleware('module:
 Route::get('/layanan', [LayananController::class, 'index'])->middleware('module:layanan');
 Route::get('/kategori', [KategoriController::class, 'index'])->middleware('module:layanan');
 Route::get('/theme', [ThemeSettingController::class, 'index']);
+Route::get('/faqs', [FaqController::class, 'index'])->middleware('module:faq');
+Route::post('/moniks/ask', [MoniksController::class, 'ask'])->middleware(['module:faq', 'throttle:30,1']);
 Route::post('/skm/store', [SkmController::class, 'store'])->middleware(['module:skm', 'throttle:10,1']);
 Route::get('/skm/stats', [SkmController::class, 'getStats'])->middleware('module:skm');
 
