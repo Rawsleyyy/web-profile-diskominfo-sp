@@ -15,6 +15,13 @@ function resolveAudioUrl(urlAudio) {
   return `${BASE_URL}/storage/${urlAudio}`;
 }
 
+function resolveThumbnailUrl(thumbnail) {
+  if (!thumbnail) return null;
+  if (thumbnail.startsWith("http")) return thumbnail;
+  if (thumbnail.startsWith("/storage/")) return `${BASE_URL}${thumbnail}`;
+  return `${BASE_URL}/storage/${thumbnail}`;
+}
+
 function getYoutubeEmbedUrl(url) {
   const patterns = [
     /youtu\.be\/([a-zA-Z0-9_-]+)/,
@@ -233,54 +240,90 @@ export default function MediaSection() {
             KOMINPOD
           </h2>
 
-          <div className="theme-panel-gradient relative min-h-[280px] overflow-hidden rounded-[2.5rem] p-8 text-white shadow-xl">
+          <div className="theme-panel-gradient relative min-h-[360px] overflow-hidden rounded-[2.5rem] p-5 text-white shadow-xl sm:p-6">
             <i className="bi bi-mic-fill absolute -bottom-4 -right-4 rotate-12 text-9xl opacity-10" />
 
             {loadingPodcast ? (
-              <p className="text-xs font-medium text-white/70">Memuat podcast...</p>
+              <p className="p-3 text-xs font-medium text-white/70">Memuat podcast...</p>
             ) : !featured ? (
-              <p className="text-xs font-medium italic text-white/70">
+              <p className="p-3 text-xs font-medium italic text-white/70">
                 Belum ada episode podcast.
               </p>
             ) : (
-              <>
-                <h4 className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/60">
-                  Podcast Terbaru
-                </h4>
-                <p className="mb-8 text-lg font-bold leading-tight">
-                  {featured.episode ? `Ep. ${featured.episode} — ` : ""}
-                  {featured.judul}
-                </p>
+              <div className="relative z-10">
+                <button
+                  type="button"
+                  onClick={() => setActivePlayer(featured)}
+                  className="group relative mb-5 block aspect-[16/8.5] w-full overflow-hidden rounded-[1.7rem] border border-white/15 bg-black/15 text-left shadow-lg"
+                  aria-label={`Putar ${featured.judul}`}
+                >
+                  {resolveThumbnailUrl(featured.thumbnail) ? (
+                    <img
+                      src={resolveThumbnailUrl(featured.thumbnail)}
+                      alt={`Thumbnail ${featured.judul}`}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-white/10">
+                      <i className="bi bi-mic-fill text-6xl text-white/25" />
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+                    <div className="min-w-0">
+                      <span className="mb-1 block text-[9px] font-black uppercase tracking-[0.18em] text-white/65">
+                        Podcast Terbaru
+                      </span>
+                      <span className="block line-clamp-2 text-base font-bold leading-tight text-white">
+                        {featured.episode ? `Ep. ${featured.episode} — ` : ""}
+                        {featured.judul}
+                      </span>
+                    </div>
+                    <span className="keep-light-surface flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base shadow-lg transition group-hover:scale-105">
+                      <i className="bi bi-play-fill" />
+                    </span>
+                  </div>
+                </button>
 
                 {restPodcasts.length > 0 && (
-                  <div className="space-y-4">
+                  <div className="space-y-2.5">
                     {restPodcasts.slice(0, 2).map((podcast) => (
                       <button
                         key={podcast.id}
                         type="button"
                         onClick={() => setActivePlayer(podcast)}
-                        className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-3 text-left backdrop-blur-sm transition hover:bg-white/20"
+                        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 text-left backdrop-blur-sm transition hover:bg-white/20"
                       >
+                        <div className="h-11 w-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
+                          {resolveThumbnailUrl(podcast.thumbnail) ? (
+                            <img
+                              src={resolveThumbnailUrl(podcast.thumbnail)}
+                              alt=""
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-white/50">
+                              <i className="bi bi-mic-fill" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-[9px] font-bold uppercase tracking-wider text-white/55">
+                            {podcast.episode ? `Episode ${podcast.episode}` : "KOMINPOD"}
+                          </span>
+                          <span className="block truncate text-[11px] font-bold text-white/90">
+                            {podcast.judul}
+                          </span>
+                        </div>
                         <div className="keep-light-surface flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs">
                           <i className="bi bi-play-fill" />
                         </div>
-                        <span className="truncate text-[10px] font-bold text-white/80">
-                          {podcast.episode ? `Edisi ${podcast.episode} — ` : ""}
-                          {podcast.judul}
-                        </span>
                       </button>
                     ))}
                   </div>
                 )}
-
-                <button
-                  type="button"
-                  onClick={() => setActivePlayer(featured)}
-                  className="keep-light-surface mt-8 block w-full rounded-xl py-3 text-center text-xs font-bold transition hover:brightness-95"
-                >
-                  Dengarkan Semua
-                </button>
-              </>
+              </div>
             )}
           </div>
         </div>

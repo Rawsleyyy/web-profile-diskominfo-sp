@@ -85,19 +85,19 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Dokumen</label>
                             <input type="text" wire:model="judul"
-                                class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            @error('judul') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            @error('judul') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
                             <select wire:model="kategori"
-                                class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 @foreach ($kategoriOptions as $opsi)
                                     <option value="{{ $opsi }}">{{ $opsi }}</option>
                                 @endforeach
                             </select>
-                            @error('kategori') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            @error('kategori') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
@@ -105,12 +105,12 @@
                                 File Dokumen (PDF, Word, Excel, PowerPoint)
                             </label>
                             <input type="file" wire:model="file"
-                                class="w-full text-sm text-gray-600 dark:text-gray-300">
+                                class="w-full text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <div wire:loading wire:target="file" class="text-xs text-gray-400 mt-1">Mengunggah file...</div>
                             @if ($existingFileName && !$file)
                                 <p class="text-xs text-gray-400 mt-1">File saat ini: {{ $existingFileName }}</p>
                             @endif
-                            @error('file') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            @error('file') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="flex justify-end gap-3 pt-2">

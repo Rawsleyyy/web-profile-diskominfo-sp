@@ -94,20 +94,28 @@ class FaqManager extends Component
 
     public function render()
     {
+        $faqs = Faq::query()
+            ->when($this->search, function ($query) {
+                $term = '%'.$this->search.'%';
+                $query->where(function ($subQuery) use ($term) {
+                    $subQuery->where('question', 'like', $term)
+                        ->orWhere('answer', 'like', $term)
+                        ->orWhere('keywords', 'like', $term)
+                        ->orWhere('category', 'like', $term);
+                });
+            })
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
         return view('livewire.admin.faq-manager', [
-            'faqs' => Faq::query()
-                ->when($this->search, function ($query) {
-                    $term = '%'.$this->search.'%';
-                    $query->where(function ($subQuery) use ($term) {
-                        $subQuery->where('question', 'like', $term)
-                            ->orWhere('answer', 'like', $term)
-                            ->orWhere('keywords', 'like', $term)
-                            ->orWhere('category', 'like', $term);
-                    });
-                })
-                ->orderBy('sort_order')
-                ->orderBy('id')
-                ->get(),
+            'faqs' => $faqs,
+            'stats' => [
+                'total' => Faq::count(),
+                'active' => Faq::where('is_active', true)->count(),
+                'inactive' => Faq::where('is_active', false)->count(),
+                'categories' => Faq::query()->whereNotNull('category')->distinct()->count('category'),
+            ],
         ]);
     }
 

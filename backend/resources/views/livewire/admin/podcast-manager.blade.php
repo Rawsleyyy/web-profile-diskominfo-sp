@@ -94,27 +94,27 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul</label>
                             <input type="text" wire:model="judul"
-                                class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            @error('judul') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            @error('judul') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Episode</label>
                             <input type="text" wire:model="episode" placeholder="Contoh: Episode 12"
-                                class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            @error('episode') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            @error('episode') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
                             <textarea wire:model="deskripsi" rows="3"
-                                class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-                            @error('deskripsi') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            @error('deskripsi') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Sumber Audio</label>
-                            <div class="flex gap-4">
+                            <div class="flex flex-wrap gap-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-3">
                                 <label class="flex items-center gap-2">
                                     <input type="radio" wire:model.live="type" value="file">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">Upload File</span>
@@ -130,32 +130,43 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">File Audio (mp3/wav/ogg)</label>
                                 <input type="file" wire:model="audio" accept="audio/*"
-                                    class="w-full text-sm text-gray-600 dark:text-gray-300">
+                                    class="w-full text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <div wire:loading wire:target="audio" class="text-xs text-gray-400 mt-1">Mengunggah file...</div>
                                 @if ($existingUrlAudio && !$audio)
                                     <p class="text-xs text-gray-400 mt-1">File saat ini: {{ basename($existingUrlAudio) }}</p>
                                 @endif
-                                @error('audio') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                @error('audio') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         @else
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link Audio</label>
                                 <input type="url" wire:model="audio_link" placeholder="https://youtube.com/..."
-                                    class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                @error('audio_link') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                @error('audio_link') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         @endif
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thumbnail (opsional)</label>
                             <input type="file" wire:model="thumbnail" accept="image/*"
-                                class="w-full text-sm text-gray-600 dark:text-gray-300">
+                                class="w-full text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <div wire:loading wire:target="thumbnail" class="text-xs text-gray-400 mt-1">Mengunggah gambar...</div>
-                            @error('thumbnail') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            @if ($thumbnail)
+                                <div class="mt-3 rounded-lg border border-gray-200 dark:border-gray-600 p-2">
+                                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Preview thumbnail baru</p>
+                                    <img src="{{ $thumbnail->temporaryUrl() }}" class="h-28 w-full rounded-lg object-cover" alt="Preview thumbnail podcast">
+                                </div>
+                            @elseif ($existingThumbnail)
+                                <div class="mt-3 rounded-lg border border-gray-200 dark:border-gray-600 p-2">
+                                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Thumbnail saat ini</p>
+                                    <img src="{{ Storage::url($existingThumbnail) }}" class="h-28 w-full rounded-lg object-cover" alt="Thumbnail podcast saat ini">
+                                </div>
+                            @endif
+                            @error('thumbnail') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" wire:model="is_active" id="is_active">
+                        <div class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/60 px-3 py-3">
+                            <input type="checkbox" wire:model="is_active" id="is_active" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <label for="is_active" class="text-sm text-gray-700 dark:text-gray-300">Aktifkan sekarang</label>
                         </div>
 
