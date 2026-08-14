@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Clock, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { ChevronDown, Clock, Menu, Moon, Sun, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDateTime } from "@/hooks/UseDateTime";
 import { useSiteConfig } from "../../context/siteconfigcontext";
@@ -173,13 +173,21 @@ export default function Navbar({ dark, toggleDark }) {
           </nav>
 
           <div className="relative z-20 flex items-center gap-2">
-            <button type="button" className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white" aria-label="Cari">
-              <Search size={15} />
-            </button>
-            <button type="button" onClick={toggleDark} className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white" title={dark ? "Mode Terang" : "Mode Gelap"}>
+            <button
+              type="button"
+              onClick={toggleDark}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white"
+              title={dark ? "Mode Terang" : "Mode Gelap"}
+            >
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white lg:hidden" aria-label="Buka menu">
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white lg:hidden"
+              aria-label="Buka menu"
+            >
               {menuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
@@ -195,7 +203,11 @@ export default function Navbar({ dark, toggleDark }) {
                   {isPureDropdown ? (
                     <div className="px-4 py-3 text-xs font-bold uppercase text-slate-800">{item.label}</div>
                   ) : (
-                    <MenuLink item={item} onClick={() => !hasChildren && setMenuOpen(false)} className="block px-4 py-3 text-xs font-bold uppercase text-slate-800" />
+                    <MenuLink
+                      item={item}
+                      onClick={() => !hasChildren && setMenuOpen(false)}
+                      className="block px-4 py-3 text-xs font-bold uppercase text-slate-800"
+                    />
                   )}
                   {item.children?.map((child) => (
                     <MenuLink

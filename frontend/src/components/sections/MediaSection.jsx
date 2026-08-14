@@ -164,6 +164,27 @@ export default function MediaSection() {
   const [featured, ...restPodcasts] = podcasts;
 
   return (
+    <>
+      <style>{`
+        .kominpod-episode-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255,255,255,.55) rgba(255,255,255,.10);
+        }
+        .kominpod-episode-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .kominpod-episode-scroll::-webkit-scrollbar-track {
+          background: rgba(255,255,255,.08);
+          border-radius: 999px;
+        }
+        .kominpod-episode-scroll::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,.45);
+          border-radius: 999px;
+        }
+        .kominpod-episode-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(255,255,255,.65);
+        }
+      `}</style>
     <section className="theme-section-alt py-20">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -287,40 +308,53 @@ export default function MediaSection() {
                 </button>
 
                 {restPodcasts.length > 0 && (
-                  <div className="space-y-2.5">
-                    {restPodcasts.slice(0, 2).map((podcast) => (
-                      <button
-                        key={podcast.id}
-                        type="button"
-                        onClick={() => setActivePlayer(podcast)}
-                        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 text-left backdrop-blur-sm transition hover:bg-white/20"
-                      >
-                        <div className="h-11 w-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
-                          {resolveThumbnailUrl(podcast.thumbnail) ? (
-                            <img
-                              src={resolveThumbnailUrl(podcast.thumbnail)}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-white/50">
-                              <i className="bi bi-mic-fill" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className="block text-[9px] font-bold uppercase tracking-wider text-white/55">
-                            {podcast.episode ? `Episode ${podcast.episode}` : "KOMINPOD"}
-                          </span>
-                          <span className="block truncate text-[11px] font-bold text-white/90">
-                            {podcast.judul}
-                          </span>
-                        </div>
-                        <div className="keep-light-surface flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs">
-                          <i className="bi bi-play-fill" />
-                        </div>
-                      </button>
-                    ))}
+                  <div>
+                    <div className="mb-2 flex items-center justify-between px-1">
+                      <span className="text-[9px] font-black uppercase tracking-[0.16em] text-white/55">
+                        Episode lainnya
+                      </span>
+                      {restPodcasts.length > 2 && (
+                        <span className="text-[9px] font-semibold text-white/45">
+                          Scroll untuk melihat semua
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="kominpod-episode-scroll max-h-[168px] space-y-2.5 overflow-y-auto overscroll-contain pr-1">
+                      {restPodcasts.map((podcast) => (
+                        <button
+                          key={podcast.id}
+                          type="button"
+                          onClick={() => setActivePlayer(podcast)}
+                          className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 text-left backdrop-blur-sm transition hover:bg-white/20"
+                        >
+                          <div className="h-11 w-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
+                            {resolveThumbnailUrl(podcast.thumbnail) ? (
+                              <img
+                                src={resolveThumbnailUrl(podcast.thumbnail)}
+                                alt={`Thumbnail ${podcast.judul}`}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-white/50">
+                                <i className="bi bi-mic-fill" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className="block text-[9px] font-bold uppercase tracking-wider text-white/55">
+                              {podcast.episode ? `Episode ${podcast.episode}` : "KOMINPOD"}
+                            </span>
+                            <span className="block truncate text-[11px] font-bold text-white/90">
+                              {podcast.judul}
+                            </span>
+                          </div>
+                          <div className="keep-light-surface flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs">
+                            <i className="bi bi-play-fill" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -331,5 +365,6 @@ export default function MediaSection() {
 
       <PodcastPlayerModal podcast={activePlayer} onClose={() => setActivePlayer(null)} />
     </section>
+    </>
   );
 }
