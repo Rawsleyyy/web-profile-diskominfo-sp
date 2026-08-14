@@ -15,6 +15,7 @@ import SKMForm from "./pages/SKMForm";
 import MaklumatPelayanan from "./pages/MaklumatPelayanan";
 import PPIDPage from "./pages/PPIDPage";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
+import PenghargaanList from "./pages/PenghargaanList";
 import AdminLoginRedirect from "./pages/AdminLoginRedirect";
 import CustomPage from "./pages/CustomPage";
 
@@ -43,6 +44,7 @@ function App() {
             <Route path="/artikel/:id" element={<ModuleGuard module="articles"><ArtikelDetail /></ModuleGuard>} />
             <Route path="/publikasi" element={<ModuleGuard module="berita"><PublikasiList /></ModuleGuard>} />
             <Route path="/publikasi/:id" element={<ModuleGuard module="berita"><PublikasiDetail /></ModuleGuard>} />
+            <Route path="/penghargaan" element={<ModuleGuard module="awards"><PenghargaanList /></ModuleGuard>} />
             <Route path="/skm" element={<ModuleGuard module="skm"><SKMForm /></ModuleGuard>} />
             <Route path="/maklumat" element={<ModuleGuard module="layanan"><MaklumatPelayanan /></ModuleGuard>} />
             <Route path="/ppid" element={<ModuleGuard module="ppid"><PPIDPage /></ModuleGuard>} />

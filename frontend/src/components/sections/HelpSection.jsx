@@ -111,6 +111,31 @@ export default function HelpSection() {
 
   return (
     <section className="theme-section-alt py-16">
+      <style>{`
+        .faq-scroll-area {
+          scrollbar-width: thin;
+          scrollbar-color: color-mix(in srgb, var(--color-primary) 55%, transparent) transparent;
+          overscroll-behavior: contain;
+        }
+
+        .faq-scroll-area::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .faq-scroll-area::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .faq-scroll-area::-webkit-scrollbar-thumb {
+          background: color-mix(in srgb, var(--color-primary) 42%, transparent);
+          border-radius: 999px;
+        }
+
+        .faq-scroll-area::-webkit-scrollbar-thumb:hover {
+          background: color-mix(in srgb, var(--color-primary) 62%, transparent);
+        }
+      `}</style>
+
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-10 text-center">
           <div className="theme-chip mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase shadow-sm">
@@ -191,8 +216,8 @@ export default function HelpSection() {
             </div>
           </div>
 
-          <div className="flex h-full flex-col gap-4 lg:col-span-2">
-            <div className="theme-card-flat flex items-center justify-between rounded-2xl p-5">
+          <div className="flex min-h-0 flex-col gap-4 lg:col-span-2 lg:h-[500px]">
+            <div className="theme-card-flat flex shrink-0 items-center justify-between rounded-2xl p-5">
               <div className="flex items-center gap-5">
                 <div className="theme-chip flex h-11 w-11 items-center justify-center rounded-2xl text-lg"><i className="bi bi-question-circle-fill" /></div>
                 <div>
@@ -203,7 +228,10 @@ export default function HelpSection() {
               <span className="theme-text-muted rounded-full border border-current/10 px-2.5 py-1 text-[10px] font-bold">{faqs.length} FAQ</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div
+              className="faq-scroll-area min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-2"
+              aria-label="Daftar FAQ"
+            >
               {faqLoading && [1, 2, 3].map((item) => <div key={item} className="theme-card-flat h-14 animate-pulse rounded-2xl" />)}
 
               {!faqLoading && faqError && (
@@ -227,10 +255,15 @@ export default function HelpSection() {
                       <span className="theme-text-secondary">{faq.question}</span>
                       <i className={`bi ${opened ? "bi-dash-lg" : "bi-plus-lg"} theme-text-muted shrink-0 transition`} />
                     </button>
+
                     {opened && (
                       <div className="border-t border-black/5 px-6 pb-5 pt-4 dark:border-white/10">
                         <p className="theme-text-muted text-xs leading-6">{faq.answer}</p>
-                        <button type="button" onClick={() => sendQuestion(faq.question)} className="theme-chip mt-3 inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[10px] font-bold">
+                        <button
+                          type="button"
+                          onClick={() => sendQuestion(faq.question)}
+                          className="theme-chip mt-3 inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[10px] font-bold"
+                        >
                           Tanya ke MONIKS <i className="bi bi-chat-dots" />
                         </button>
                       </div>
@@ -240,7 +273,10 @@ export default function HelpSection() {
               })}
             </div>
 
-            <Link to="/skm" className="theme-action-gradient group mt-auto flex items-center justify-between rounded-2xl p-6 text-white shadow-sm">
+            <Link
+              to="/skm"
+              className="theme-action-gradient group flex shrink-0 items-center justify-between rounded-2xl p-6 text-white shadow-sm"
+            >
               <div className="flex items-center gap-5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl"><i className="bi bi-hand-thumbs-up-fill" /></div>
                 <div>
